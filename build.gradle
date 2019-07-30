@@ -1,0 +1,94 @@
+plugins {
+    id 'org.asciidoctor.convert' version '1.5.3'
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.bespinglobal.dcos.ap'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+
+    compile.exclude module: "spring-boot-starter-tomcat"
+    compile.exclude module: "HikariCP"
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+asciidoctor {
+    dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Undertow
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+
+    // AccessLog Filter
+    implementation 'org.apache.commons:commons-lang3:3.9'
+
+    // AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Mariadb, Mysql, JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
+    implementation 'mysql:mysql-connector-java:8.0.16'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.1.6.RELEASE'
+//    implementation 'org.javassist:javassist:3.25.0-GA'
+    implementation 'org.apache.tomcat:tomcat-jdbc:9.0.22'
+//    implementation 'org.hibernate:hibernate-entitymanager:5.4.3.Final'
+
+    // Envers
+    implementation 'org.springframework.data:spring-data-envers:2.1.8.RELEASE'
+    implementation 'org.glassfish.jaxb:jaxb-runtime'
+
+    // Cassandra
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra:2.1.6.RELEASE'
+
+    // Zipkin - Log Tracer
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth:2.1.2.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin:2.1.2.RELEASE'
+    implementation 'org.springframework.kafka:spring-kafka:2.2.7.RELEASE'
+
+    // Flyway - version control for database
+    implementation 'org.flywaydb:flyway-core:5.2.4'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.3.RELEASE'
+}
+
+test {
+    outputs.dir snippetsDir
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
