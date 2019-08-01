@@ -3,7 +3,7 @@ package com.bespinglobal.dcos.ap.utils;
 import org.springframework.http.HttpStatus;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.utils.RtCode
  * Version : 2019.07.24 v0.1
  * Created by taehyoung.yim on 2019-07-24.
@@ -27,27 +27,28 @@ public enum RtCode {
     RT_NOT_SUPPORT(-11, "Not support", HttpStatus.NOT_FOUND),
     RT_FAILURE(-99, "Failure", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    //  Return Code [-8001XX]
-    RT_PORTAL_INTERNAL_ERROR(-800100, "Portal System Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_CLIENT_ERROR(-800101, "Portal System Client Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_AUTH_FAILURE(-800102, "Portal Authentication Failure", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_URISYNTAX_ERROR(-800103, "Portal URI Syntax Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_CONNECTION_ERROR(-800110, "Portal System Connect Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_SOCKET_ERROR(-800111, "Portal System Socket Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_IO_ERROR(-800112, "Portal System IO Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_PARSING_ERROR(-800113, "Portal System Parsing Error", HttpStatus.BAD_REQUEST),
-    RT_PORTAL_ENCODING_ERROR(-800114, "Portal System Encoding Error", HttpStatus.BAD_REQUEST),
+    //  Return Code [-10001XX]
+    RT_AWS_INTERNAL_ERROR(-1000100, "AWS System Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_CLIENT_ERROR(-1000101, "AWS System Client Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_AUTH_FAILURE(-1000102, "AWS Authentication Failure", HttpStatus.BAD_REQUEST),
+    RT_AWS_URISYNTAX_ERROR(-1000103, "AWS URI Syntax Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_CONNECTION_ERROR(-1000110, "AWS System Connect Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_SOCKET_ERROR(-1000111, "AWS System Socket Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_IO_ERROR(-1000112, "AWS System IO Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_PARSING_ERROR(-1000113, "AWS System Parsing Error", HttpStatus.BAD_REQUEST),
+    RT_AWS_ENCODING_ERROR(-1000114, "AWS System Encoding Error", HttpStatus.BAD_REQUEST),
 
-    //  Return Code [-9001XX]
-    RT_ASSET_INTERNAL_ERROR(-900100, "Asset System Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_CLIENT_ERROR(-900101, "Asset System Client Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_AUTH_FAILURE(-900102, "Asset Authentication Failure", HttpStatus.BAD_REQUEST),
-    RT_ASSET_URISYNTAX_ERROR(-900103, "Asset URI Syntax Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_CONNECTION_ERROR(-900110, "Asset System Connect Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_SOCKET_ERROR(-900111, "Asset System Socket Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_IO_ERROR(-900112, "Asset System IO Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_PARSING_ERROR(-900113, "Asset System Parsing Error", HttpStatus.BAD_REQUEST),
-    RT_ASSET_ENCODING_ERROR(-900114, "Asset System Encoding Error", HttpStatus.BAD_REQUEST),
+    //  Return Code [-11001XX]
+    RT_GCP_INTERNAL_ERROR(-1100100, "GCP System Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_CLIENT_ERROR(-1100101, "GCP System Client Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_AUTH_FAILURE(-1100102, "GCP Authentication Failure", HttpStatus.BAD_REQUEST),
+    RT_GCP_URISYNTAX_ERROR(-1100103, "GCP URI Syntax Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_CONNECTION_ERROR(-1100110, "GCP System Connect Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_SOCKET_ERROR(-1100111, "GCP System Socket Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_IO_ERROR(-1100112, "GCP System IO Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_PARSING_ERROR(-1100113, "GCP System Parsing Error", HttpStatus.BAD_REQUEST),
+    RT_GCP_ENCODING_ERROR(-1100114, "GCP System Encoding Error", HttpStatus.BAD_REQUEST),
+
 
     // UNKNOWN Error Return Code
     RT_UNKNOWN(-999999, "Unknown error. contact to admin", HttpStatus.INTERNAL_SERVER_ERROR);

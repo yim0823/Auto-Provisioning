@@ -6,7 +6,7 @@ import org.springframework.restdocs.operation.preprocess.OperationResponsePrepro
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : ApiDocumentUtils
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

@@ -1,23 +1,17 @@
-# DCOS - AC(Auto Provisioning)
-Java web application 으로 Cloud 제품별 Asset 정보와 서비스 계정을 주기적으로 Crawling 서비스이다.
+# DCOS - AP(Auto Provisioning)
+Java web application 으로 Cloud 제품별 Excel 혹은 Script 내용을 기반으로 자동을 AWS/GCP Resources 생성, 변경하는 웹플랫폼
 
 ## 주기능
- - IC는 주기적으로, 
-   - OpsNow Database(MySQL) 에서 Asset 정보를
-   - Portal Database(MySQL) 에서 Service Account 정보를
-   
-   DCOS Database(MariaDB와 Cassandra) 로 ETL 한다.
-   
- - 데이터 성격에 따라,
-    - basic data 는 MariaDB 에
-    - extra data 는 Cassandra 에
-    
-    분리되어 관리된다.  
+ - Excel 혹은 Script 에 기입한 생성/변경 정보를 읽어드린다. (Reader)
+ - 정보를 객체화하고 DB 에 이력을 남긴다.
+   - 진행 상태를 확인할 수 있게 진행 단계를 함께 남긴다. 
+ - Cloud product type 에 따라 SDK 이용해 request 를 보낸다. (Sender)
  
 ## 환경
  - Java 11
  - Spring-boot-gradle.2.1.5.RELEASE
  - JPA 2.1.5.RELEASE
+   - Hikari
  - MariaDB 10.3
  - Undertow
  - Zipkin & Seuth 2.1.2.RELEASE

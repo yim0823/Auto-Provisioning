@@ -4,26 +4,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 
 import java.util.Optional;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : JpaAuditingConfig
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.
  * *** 저작권 주의 ***
  */
 @Configuration
-@EnableTransactionManagement
-@EnableJpaRepositories(
-        basePackages = "com.bespinglobal.dcos.ic.api.repositories.basic.repository",
-        repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider") // JPA Auditing - Common Entity 의 생성시간, 수정시간 자동화
-public class JpaAuditingConfig {
+public class AuditingConfig {
 
     @Bean
     public AuditorAware<String> auditorProvider() {

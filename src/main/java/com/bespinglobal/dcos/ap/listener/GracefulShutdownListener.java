@@ -8,7 +8,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : GracefulShutdownListener
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

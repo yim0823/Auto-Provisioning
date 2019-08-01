@@ -11,12 +11,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-
     compile.exclude module: "spring-boot-starter-tomcat"
-    compile.exclude module: "HikariCP"
+//    compile.exclude module: "HikariCP"
 }
 
 repositories {
@@ -27,15 +23,24 @@ ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
 
-asciidoctor {
-    dependsOn test
+test {
+    outputs.dir snippetsDir
 }
 
-bootJar {
+asciidoctor {
+    dependsOn test
+    sourceDir 'src/docs/asciidoc'
+    inputs.dir snippetsDir
+}
+
+task copyDocument(type: Copy) {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}/html5") {
-        into 'static/docs'
-    }
+    from file("build/asciidoc/html5/")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn copyDocument
 }
 
 dependencies {
@@ -56,21 +61,20 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Mariadb, Mysql, JPA
+    // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MariaDB
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
     implementation 'mysql:mysql-connector-java:8.0.16'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.1.6.RELEASE'
-//    implementation 'org.javassist:javassist:3.25.0-GA'
+
+    // DBCP
     implementation 'org.apache.tomcat:tomcat-jdbc:9.0.22'
-//    implementation 'org.hibernate:hibernate-entitymanager:5.4.3.Final'
+//    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.1.6.RELEASE'
 
     // Envers
     implementation 'org.springframework.data:spring-data-envers:2.1.8.RELEASE'
     implementation 'org.glassfish.jaxb:jaxb-runtime'
-
-    // Cassandra
-    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra:2.1.6.RELEASE'
 
     // Zipkin - Log Tracer
     implementation 'org.springframework.cloud:spring-cloud-starter-sleuth:2.1.2.RELEASE'
@@ -80,15 +84,14 @@ dependencies {
     // Flyway - version control for database
     implementation 'org.flywaydb:flyway-core:5.2.4'
 
+    // Apache HttpClient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
+
+    // For parsing Json
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
+    //  - For serializing LocalDate, LocalTime, LocalDateTime
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.3.RELEASE'
-}
-
-test {
-    outputs.dir snippetsDir
-}
-
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
 }

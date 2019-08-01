@@ -1,10 +1,10 @@
 package com.bespinglobal.dcos.ap.listener;
 
-import com.bespinglobal.dcos.ap.api.repositories.basic.domain.AuditRevisionEntity;
+import com.bespinglobal.dcos.ap.api.domain.AuditRevisionEntity;
 import org.hibernate.envers.RevisionListener;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.listener.AuditRevisionListener
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

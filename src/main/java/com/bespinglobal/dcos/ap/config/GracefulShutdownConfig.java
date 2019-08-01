@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : GracefulShutdownConfig
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

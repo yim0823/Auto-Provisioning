@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : PersonController
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

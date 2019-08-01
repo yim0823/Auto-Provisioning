@@ -1,4 +1,4 @@
-package com.bespinglobal.dcos.ap.api.repositories.basic.domain;
+package com.bespinglobal.dcos.ap.api.domain;
 
 import com.bespinglobal.dcos.ap.listener.AuditRevisionListener;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import org.hibernate.envers.RevisionEntity;
 import javax.persistence.*;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.api.repositories.basic.domain.AuditRevisionEntity
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

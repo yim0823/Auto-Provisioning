@@ -1,6 +1,6 @@
 package com.bespinglobal.dcos.ap.api.dto;
 
-import com.bespinglobal.dcos.ap.api.repositories.basic.domain.Person;
+import com.bespinglobal.dcos.ap.api.domain.Person;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.is;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : PersonDtoTest
  * Version :
  * Created by taehyoung.yim on 2019-07-16.

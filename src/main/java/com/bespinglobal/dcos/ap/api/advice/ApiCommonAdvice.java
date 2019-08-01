@@ -20,7 +20,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.Objects;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : ApiCommonAdvice
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

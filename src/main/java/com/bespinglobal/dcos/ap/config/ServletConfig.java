@@ -4,7 +4,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.config.ServletConfig
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

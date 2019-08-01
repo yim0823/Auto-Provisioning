@@ -1,6 +1,12 @@
 package com.bespinglobal.dcos.ap.api.dto;
 
-import com.bespinglobal.dcos.ap.api.repositories.basic.domain.Person;
+import com.bespinglobal.dcos.ap.api.domain.Person;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : PersonDto
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.
@@ -24,6 +30,7 @@ public class PersonDto {
     @Getter
     public static class Create {
 
+        private Long id;
         @NotEmpty
         private String firstName;
         @NotEmpty
@@ -31,10 +38,13 @@ public class PersonDto {
         @NotNull
         private String gender;
         @NotNull
-        //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonDeserialize(using = LocalDateDeserializer.class)
+        @JsonSerialize(using = LocalDateSerializer.class)
+//        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate birthDate;
-
+        @JsonIgnore
+        private Long age;
         private String hobby;
 
         public Person toEntity() {
@@ -52,19 +62,20 @@ public class PersonDto {
     @Getter
     public static class Update {
 
+        private Long id;
         @NotEmpty
         private String firstName;
         @NotEmpty
         private String lastName;
         @NotNull
-        //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate birthDate;
 
         private String hobby;
 
         public Person apply(Person person) {
-            return person.update(firstName, lastName, birthDate, hobby);
+            return person.update(id, firstName, lastName, birthDate, hobby);
         }
     }
 
@@ -74,10 +85,15 @@ public class PersonDto {
         private Long id;
         private String firstName;
         private String lastName;
+
+        @JsonIgnore
         private long age;
+
         private String gender;
+
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate birthDate;
+
         private String hobby;
 
         @Builder

@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ap.api.service.crawler.AssetServiceImplTest
  * Version :
  * Created by taehyoung.yim on 2019-07-25.

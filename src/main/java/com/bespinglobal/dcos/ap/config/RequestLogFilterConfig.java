@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.config.RequestLogFilterConfig
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

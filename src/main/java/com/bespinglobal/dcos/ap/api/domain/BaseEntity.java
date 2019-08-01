@@ -1,4 +1,4 @@
-package com.bespinglobal.dcos.ap.api.repositories.basic.domain;
+package com.bespinglobal.dcos.ap.api.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : BaseEntity
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

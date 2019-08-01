@@ -2,8 +2,8 @@ package com.bespinglobal.dcos.ap.api.service;
 
 import com.bespinglobal.dcos.ap.api.dto.PersonDto;
 import com.bespinglobal.dcos.ap.api.exception.ApplicationException;
-import com.bespinglobal.dcos.ap.api.repositories.basic.domain.Person;
-import com.bespinglobal.dcos.ap.api.repositories.basic.repository.PersonRepository;
+import com.bespinglobal.dcos.ap.api.domain.Person;
+import com.bespinglobal.dcos.ap.api.repository.PersonRepository;
 import com.bespinglobal.dcos.ap.utils.RtCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : PersonService
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

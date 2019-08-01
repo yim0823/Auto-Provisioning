@@ -1,6 +1,4 @@
-package com.bespinglobal.dcos.ap.api.repositories.basic.domain;
-
-import javax.persistence.*;
+package com.bespinglobal.dcos.ap.api.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,10 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : Person
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.
@@ -43,8 +42,9 @@ public class Person extends BaseEntity{
     private String hobby;
 
     @Builder
-    private Person(String firstName, String lastName, String gender, LocalDate birthDate, String hobby) {
+    private Person(Long id, String firstName, String lastName, String gender, LocalDate birthDate, String hobby) {
 
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -52,11 +52,13 @@ public class Person extends BaseEntity{
         this.hobby = hobby;
     }
 
-    public Person update(String firstName, String lastName, LocalDate birthDate, String hobby) {
+    public Person update(Long id, String firstName, String lastName, LocalDate birthDate, String hobby) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.hobby = hobby;
+
         return this;
     }
 }

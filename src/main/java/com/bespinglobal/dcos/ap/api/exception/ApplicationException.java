@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.api.exception.ApplicationException
  * Version : 2019.07.24 v0.1
  * Created by taehyoung.yim on 2019-07-24.

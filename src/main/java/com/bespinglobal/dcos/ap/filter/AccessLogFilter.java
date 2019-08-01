@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : com.bespinglobal.dcos.ic.filter.AccessLogFilter
  * Version : 2019.07.22 v0.1
  * Created by taehyoung.yim on 2019-07-22.

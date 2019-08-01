@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : ErrorMessageCollection
  * Version : 2019.07.16 v0.1
  * Created by taehyoung.yim on 2019-07-16.

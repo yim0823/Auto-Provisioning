@@ -3,9 +3,8 @@ package com.bespinglobal.dcos.ap.api.service;
 import com.bespinglobal.dcos.ap.APApplication;
 import com.bespinglobal.dcos.ap.api.dto.PersonDto;
 import com.bespinglobal.dcos.ap.api.exception.ApplicationException;
-import com.bespinglobal.dcos.ap.api.repositories.basic.domain.Person;
-import com.bespinglobal.dcos.ap.api.repositories.basic.repository.PersonRepository;
-import com.bespinglobal.dcos.ap.config.DataSourceBasicConfig;
+import com.bespinglobal.dcos.ap.api.domain.Person;
+import com.bespinglobal.dcos.ap.api.repository.PersonRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,16 +23,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Project : Information-Collector
+ * Project : Auto-Provisioning
  * Class : PersonServiceTest
  * Version :
  * Created by taehyoung.yim on 2019-07-16.
  * *** 저작권 주의 ***
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-        APApplication.class,
-        DataSourceBasicConfig.class})
+@SpringBootTest(classes = { APApplication.class })
 public class PersonServiceTest {
 
     @Rule
@@ -58,10 +55,10 @@ public class PersonServiceTest {
         );
     }
 
-    @After
-    public void tearDown() throws Exception {
-        personRepository.deleteAll();
-    }
+//    @After
+//    public void tearDown() throws Exception {
+//        personRepository.deleteAll();
+//    }
 
     @Test
     public void a1_findAll() {
@@ -119,17 +116,16 @@ public class PersonServiceTest {
 
         // given
         PersonDto.Create create = new PersonDto.Create();
-        create.setBirthDate(LocalDate.of(1983, 8, 23));
-        create.setGender("Male");
-        create.setFirstName("taehyoung");
-        create.setLastName("Yim");
-        create.setHobby("play football");
+        create.setBirthDate(LocalDate.of(1983, 8, 31));
+        create.setGender("Female");
+        create.setFirstName("kyounghee");
+        create.setLastName("Kim");
+        create.setHobby("watch the football game");
 
         // when
         PersonDto.Response response = personService.add(create);
 
         // then
-        assertThat(personRepository.count(), is(2L));
         assertThat(response.getId(), is(notNullValue()));
     }
 
