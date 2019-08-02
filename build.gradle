@@ -51,6 +51,15 @@ dependencies {
     // Undertow
     implementation 'org.springframework.boot:spring-boot-starter-undertow'
 
+    // Netty
+//    implementation 'io.netty:netty-all:4.1.38.Final'
+
+    // Apache HttpClient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
+
+    // Http Asyn Client
+    implementation 'org.apache.httpcomponents:httpasyncclient:4.1.4'
+
     // AccessLog Filter
     implementation 'org.apache.commons:commons-lang3:3.9'
 
@@ -83,9 +92,6 @@ dependencies {
 
     // Flyway - version control for database
     implementation 'org.flywaydb:flyway-core:5.2.4'
-
-    // Apache HttpClient
-    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
 
     // For parsing Json
     implementation 'com.jayway.jsonpath:json-path:2.4.0'

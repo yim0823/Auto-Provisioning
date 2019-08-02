@@ -13,7 +13,13 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -70,6 +76,10 @@ public class HttpClientConfig {
     @Value("${spring.httpclient.close-idle-time-sec}")
     private int CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS;
 
+    /**
+     * For Sync httpclient
+     * @return
+     */
     @Bean
     public PoolingHttpClientConnectionManager poolingConnectionManager() {
 
@@ -159,6 +169,40 @@ public class HttpClientConfig {
                 }
             }
         };
+    }
+
+    /**
+     * For async httpclient
+     * @return
+     */
+    @Bean
+    public PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager() {
+
+        PoolingNHttpClientConnectionManager connectionManager = null;
+        try {
+            connectionManager = new PoolingNHttpClientConnectionManager(
+                    new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
+            connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        } catch (IOReactorException e) {
+            logger.error("Pooling Connection Manager Initialisation failure because of " + e.getMessage(), e);
+        }
+
+        return connectionManager;
+    }
+
+    @Bean
+    public CloseableHttpAsyncClient asyncHttpClient() {
+
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(REQUEST_TIMEOUT)
+                .setConnectTimeout(CONNECT_TIMEOUT)
+                .setSocketTimeout(SOCKET_TIMEOUT)
+                .build();
+
+        return HttpAsyncClientBuilder.create()
+                .setConnectionManager(poolingNHttpClientConnectionManager())
+                .setDefaultRequestConfig(requestConfig)
+                .build();
     }
 
 }

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -70,7 +71,7 @@ public class PersonRepositoryTest {
 
         // then
         PersonDto.Response response = PersonDto.Response.of(created);
-        Assert.assertNotNull(response.getId());
+        assertThat(response.getId(), notNullValue());
         assertThat(response.getFirstName(), is("kyounghee"));
         assertThat(response.getLastName(), is("Kim"));
     }
