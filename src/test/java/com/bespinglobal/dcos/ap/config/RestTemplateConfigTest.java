@@ -13,8 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -91,7 +89,8 @@ public class RestTemplateConfigTest {
                 new TypeReference<List<PersonDto.Create>>() {});
 
         // then
-        assertThat(personDtoList.size(), is(6));
+        assertThat(response.getStatusCodeValue(), is(200));
+        assertThat(personDtoList.size(), is(notNullValue()));
     }
 
     @Test
@@ -122,6 +121,9 @@ public class RestTemplateConfigTest {
         // given
         String url = "http://localhost:" + randomServerPort + "/rest/persons";
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         PersonDto.Create create = new PersonDto.Create();
         create.setFirstName("ducklee");
         create.setLastName("Choi");
@@ -129,42 +131,17 @@ public class RestTemplateConfigTest {
         create.setHobby("swim");
         create.setBirthDate(LocalDate.of(1954, 01, 15));
 
-        HttpEntity<PersonDto.Create> request = new HttpEntity<>(create);
-        ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+        HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(create), headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-//        // when
-//        ResponseEntity<String> result = restTemplate.postForEntity(url, create, String.class);
-//        System.out.println("################ " + result.getBody());
-//--------------------
+        // when
+        PersonDto.Create personDto = objectMapper.readValue(
+                objectMapper.writeValueAsString(JsonPath.read(response.getBody(), "$.data.person")),
+                new TypeReference<PersonDto.Create>() {});
 
-//        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
-//        requestBody.add("firstName", "ducklee");
-//        requestBody.add("lastName", "Choi");
-//        requestBody.add("gender", "Female");
-//        requestBody.add("birthDate", LocalDate.of(1954, 01, 15));
-//        requestBody.add("hobby", "swim");
-//
-//        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-//        headers.add("Content-Type", MediaType.APPLICATION_JSON.toString());
-//        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-//
-//        HttpEntity<MultiValueMap<String, Object>> httpEntity =
-//                new HttpEntity<MultiValueMap<String, Object>>(requestBody, headers);
-
-//        // when
-//        ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
-//        System.out.println("################ " + result.getBody());
-
-//        ResponseEntity<String> response =
-//                restTemplate.postForEntity(url, create, String.class);
-//
-//        PersonDto.Create personDto = objectMapper.readValue(
-//                JsonPath.read(response.getBody(), "$.data").toString(),
-//                PersonDto.Create.class);
-//
-//        assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
-//        assertThat(personDto, notNullValue());
-//        assertThat(personDto.getFirstName(), is("ducklee"));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(personDto, notNullValue());
+        assertThat(personDto.getFirstName(), is("ducklee"));
     }
 
     @Test(timeout = DEFAULT_TIMEOUT)

@@ -3,6 +3,7 @@ package com.bespinglobal.dcos.ap.api.dto;
 import com.bespinglobal.dcos.ap.api.domain.Person;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -31,18 +32,26 @@ public class PersonDto {
     public static class Create {
 
         private Long id;
+
         @NotEmpty
+        @JsonProperty("firstName")
         private String firstName;
+
         @NotEmpty
+        @JsonProperty("lastName")
         private String lastName;
+
         @NotNull
         private String gender;
+
         @NotNull
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonProperty("birthDate")
         private LocalDate birthDate;
+
         @JsonIgnore
         private Long age;
         private String hobby;
@@ -83,17 +92,20 @@ public class PersonDto {
     public static class Response {
 
         private Long id;
-        private String firstName;
-        private String lastName;
 
-        @JsonIgnore
-        private long age;
+        @JsonProperty("firstName")
+        private String firstName;
+
+        @JsonProperty("lastName")
+        private String lastName;
 
         private String gender;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate birthDate;
 
+        @JsonIgnore
+        private Long age;
         private String hobby;
 
         @Builder

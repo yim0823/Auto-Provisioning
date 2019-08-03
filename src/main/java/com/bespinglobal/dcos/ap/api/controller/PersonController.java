@@ -1,12 +1,9 @@
 package com.bespinglobal.dcos.ap.api.controller;
 
 import com.bespinglobal.dcos.ap.api.component.ServiceComponent;
-import com.bespinglobal.dcos.ap.api.response.ApiResponseDto;
 import com.bespinglobal.dcos.ap.api.dto.PersonDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.bespinglobal.dcos.ap.api.response.ApiResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,8 +18,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(value = PersonController.PATH)
 public class PersonController {
-
-    private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
 
     static final String PATH = "/rest/persons";
 
@@ -41,15 +36,8 @@ public class PersonController {
         return ApiResponseDto.createOK(new PersonDto.ResponseOne(service.getPersonService().findById(id)));
     }
 
-    @PostMapping
-    public ApiResponseDto<PersonDto.ResponseOne> add(
-            @RequestBody
-//            @Valid
-            PersonDto.Create create) {
-
-        logger.info("######### " + create.getFirstName());
-        logger.info("######### " + create.getLastName());
-        logger.info("######### " + create.getGender());
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ApiResponseDto<PersonDto.ResponseOne> add(@RequestBody @Valid PersonDto.Create create) {
         return ApiResponseDto.createOK(new PersonDto.ResponseOne(service.getPersonService().add(create)));
     }
 
