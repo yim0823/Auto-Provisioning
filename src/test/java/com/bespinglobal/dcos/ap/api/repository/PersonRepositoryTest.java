@@ -2,9 +2,7 @@ package com.bespinglobal.dcos.ap.api.repository;
 
 import com.bespinglobal.dcos.ap.api.domain.Person;
 import com.bespinglobal.dcos.ap.api.dto.PersonDto;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +24,6 @@ import static org.junit.Assert.assertThat;
  * Created by taehyoung.yim on 2019-07-31.
  * *** 저작권 주의 ***
  */
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PersonRepositoryTest {
