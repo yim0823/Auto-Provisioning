@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -39,22 +37,26 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RestTemplateConfigTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestTemplateConfigTest.class);
-
     private static final int DEFAULT_SLEEP_MILLIS = 20;
     private static final int DEFAULT_TIMEOUT = 10000;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private AsyncRestTemplate asyncRestTemplate;
 
     @LocalServerPort
     int randomServerPort;
 
-    @Autowired
+    private RestTemplate restTemplate;
+    private AsyncRestTemplate asyncRestTemplate;
     private ObjectMapper objectMapper;
+
+    @Autowired
+    public RestTemplateConfigTest(
+            RestTemplate restTemplate,
+            AsyncRestTemplate asyncRestTemplate,
+            ObjectMapper objectMapper) {
+
+        this.restTemplate = restTemplate;
+        this.asyncRestTemplate = asyncRestTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * 아래 RestTemplate 를 이용하는 모든 Test-Units 은 connection pool 로 자동할당되어 관리 된다.

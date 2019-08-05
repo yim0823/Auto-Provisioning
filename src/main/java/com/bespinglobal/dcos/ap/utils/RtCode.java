@@ -21,10 +21,11 @@ public enum RtCode {
     RT_PROPAGATION_ERROR(-5, "Propagation error", HttpStatus.BAD_REQUEST),
     RT_VALIDATION_FAILURE(-6, "Validation error", HttpStatus.BAD_REQUEST),
     RT_BINDING_FAILURE(-7, "Binding error", HttpStatus.BAD_REQUEST),
-    RT_AUTHENTICATION_FAILURE(-8, "Authentication failure", HttpStatus.FORBIDDEN),
-    RT_NOT_EXIST(-9, "Not exist", HttpStatus.GONE),
-    RT_DUPLICATED(-10, "Duplicated", HttpStatus.BAD_REQUEST),
-    RT_NOT_SUPPORT(-11, "Not support", HttpStatus.NOT_FOUND),
+    RT_PARSING_ERROR(-8, "Parsing Error", HttpStatus.BAD_REQUEST),
+    RT_AUTHENTICATION_FAILURE(-9, "Authentication failure", HttpStatus.FORBIDDEN),
+    RT_NOT_EXIST(-10, "Not exist", HttpStatus.GONE),
+    RT_DUPLICATED(-11, "Duplicated", HttpStatus.BAD_REQUEST),
+    RT_NOT_SUPPORT(-12, "Not support", HttpStatus.NOT_FOUND),
     RT_FAILURE(-99, "Failure", HttpStatus.INTERNAL_SERVER_ERROR),
 
     //  Return Code [-10001XX]
