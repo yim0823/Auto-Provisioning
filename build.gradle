@@ -2,12 +2,13 @@ plugins {
     id 'org.asciidoctor.convert' version '1.5.3'
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
+    id "com.google.cloud.tools.jib" version "1.4.0"
 }
 
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.bespinglobal.dcos.ap'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
@@ -41,6 +42,54 @@ task copyDocument(type: Copy) {
 
 build {
     dependsOn copyDocument
+}
+
+jib {
+    allowInsecureRegistries = true
+    to {
+        image = "${project.name}:${version}".toLowerCase()
+
+    }
+    container {
+        // Set JVM options.
+        jvmFlags = ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-Dserver.port=8080']
+        // Expose different port.
+        ports = ['8080']
+        // Add labels.
+        labels = [maintainer: 'dcos', subtainer: 'ap']
+    }
+}
+
+// gradlew clean bootWar jibDockerBuild dockerLocalRun --stacktrace
+task dockerLocalRun() {
+    doLast {
+        def imageName = "${project.name}:${project.version}".toLowerCase()
+        def containerName = "${project.name}".toLowerCase()
+
+        println("Checking for the container, " + containerName)
+        Process process = "docker stop ${containerName}".split(' ').execute()
+        def out = new StringBuilder()
+        def err = new StringBuilder()
+
+        process.consumeProcessOutput( out, err )
+        process.waitFor()
+
+        if (err.size() > 0) {
+            println "There is no container " + containerName + ", message: " + err
+            exec { commandLine "docker run -d -p 80:8080 --name ${containerName} ${imageName}".split(' ') }
+        } else {
+            println("Stoping the previous container, " + containerName)
+            exec { commandLine "docker stop ${containerName}".split(' ') }
+
+            println("Removing the previous container, " + containerName)
+            exec { commandLine "docker rm ${containerName}".split(' ') }
+
+            println("Starting the new container, " + containerName)
+            exec { commandLine "docker run -d -p 80:8080 --name ${containerName} ${imageName}".split(' ') }
+        }
+
+        println('\nComplete docker build.')
+    }
 }
 
 dependencies {
