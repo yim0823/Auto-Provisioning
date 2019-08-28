@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auto-provisioning-deployment
+  labels:
+    app: dcos
+spec:
+  replicas: 2
+  minReadySeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: auto-provisioning-api
+  template:
+    metadata:
+      labels:
+        app: auto-provisioning-api
+    spec:
+      containers:
+        - image: yim0823/auto-provisioning:latest
+          imagePullPolicy: Always
+          name: auto-provisioning-api
+          ports:
+            - containerPort: 30001
+#          livenessProbe:
+#            httpGet:
+#              path: "{{ .Values.ingress.flower.livenessPath }}/"
+#              port: 8080
+#            initialDelaySeconds: 20
+#            periodSeconds: 40
+#            timeoutSeconds: 1
+#            successThreshold: 1
+#            failureThreshold: 5

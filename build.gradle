@@ -2,10 +2,9 @@ plugins {
     id 'org.asciidoctor.convert' version '1.5.3'
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
-    id "com.google.cloud.tools.jib" version "1.4.0"
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "com.google.cloud.tools.jib" version "1.5.0"
 }
-
-apply plugin: 'io.spring.dependency-management'
 
 group = 'com.bespinglobal.dcos.ap'
 version = '0.0.1'
@@ -46,17 +45,27 @@ build {
 
 jib {
     allowInsecureRegistries = true
+    from {
+        image = "hirokimatsumoto/alpine-openjdk-11"
+    }
     to {
         image = "${project.name}:${version}".toLowerCase()
-
+        tags = ["0.0.1"]
     }
     container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+
         // Set JVM options.
-        jvmFlags = ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCGroupMemoryLimitForHeap', '-Dserver.port=8080']
+        jvmFlags = ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:HeapDumpPath=/opt/apps/hprof/heapdump.hprof', '-Xms1g']
+
+        // Additional program arguments appended to command to start the container
+        args = ['-Dserver.port=8080', '--spring.config.name=application', '--spring.datasource.url=jdbc:mariadb://10.100.61.108:3306/dcos?createDatabaseIfNotExist=true&useMysqlMetadata=true']
+
         // Expose different port.
-        ports = ['8080']
+        ports = ['30001']
+
         // Add labels.
-        labels = [maintainer: 'dcos', subtainer: 'ap']
+        labels = [maintainer: 'dcos', subtainer: 'auto-provisioning-api']
     }
 }
 
@@ -76,6 +85,7 @@ task dockerLocalRun() {
 
         if (err.size() > 0) {
             println "There is no container " + containerName + ", message: " + err
+            println "Therefore we will run a new container...."
             exec { commandLine "docker run -d -p 80:8080 --name ${containerName} ${imageName}".split(' ') }
         } else {
             println("Stoping the previous container, " + containerName)
