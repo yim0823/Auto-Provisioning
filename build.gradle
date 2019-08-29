@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
     id "io.spring.dependency-management" version "1.0.8.RELEASE"
-    id "com.google.cloud.tools.jib" version "1.5.0"
+    id "com.google.cloud.tools.jib" version "1.5.1"
 }
 
 group = 'com.bespinglobal.dcos.ap'
@@ -47,10 +47,18 @@ jib {
     allowInsecureRegistries = true
     from {
         image = "hirokimatsumoto/alpine-openjdk-11"
+        auth {
+            username = "yim0823"
+            password = "hyoung0823"
+        }
     }
     to {
-        image = "${project.name}:${version}".toLowerCase()
+        image = "registry.hub.docker.com/yim0823/${project.name}:${version}".toLowerCase()
         tags = ["0.0.1"]
+        auth {
+            username = "yim0823"
+            password = "hyoung0823"
+        }
     }
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"

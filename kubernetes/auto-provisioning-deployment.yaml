@@ -21,7 +21,7 @@ spec:
         app: auto-provisioning-api
     spec:
       containers:
-        - image: yim0823/auto-provisioning:latest
+        - image: yim0823/auto-provisioning:0.0.1
           imagePullPolicy: Always
           name: auto-provisioning-api
           ports:
