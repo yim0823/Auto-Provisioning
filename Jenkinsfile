@@ -1,3 +1,4 @@
+def appName = "auto-provisioning"
 def label = "${appName}-${UUID.randomUUID().toString()}"
 
 podTemplate(
@@ -16,7 +17,6 @@ podTemplate(
 {
     node(label) {
         def appImage = "registry.hub.docker.com/yim0823"
-        def appName = "auto-provisioning"
 
         def myRepo = checkout scm
         def gitCommit = myRepo.GIT_COMMIT
