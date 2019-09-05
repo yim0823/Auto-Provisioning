@@ -44,17 +44,12 @@ build {
 }
 
 jib {
-    allowInsecureRegistries = true
     from {
         image = "hirokimatsumoto/alpine-openjdk-11"
-        auth {
-            username = "yim0823"
-            password = "hyoung0823"
-        }
     }
     to {
         image = "registry.hub.docker.com/yim0823/${project.name}:${version}".toLowerCase()
-        tags = ["0.0.1"]
+//        tags = ["0.0.1"]
         auth {
             username = "yim0823"
             password = "hyoung0823"
@@ -75,6 +70,7 @@ jib {
         // Add labels.
         labels = [maintainer: 'dcos', subtainer: 'auto-provisioning-api']
     }
+    allowInsecureRegistries = true
 }
 
 // gradlew clean bootWar jibDockerBuild dockerLocalRun --stacktrace
