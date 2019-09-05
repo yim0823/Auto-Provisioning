@@ -19,29 +19,29 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
+//ext {
+//    set('snippetsDir', file("build/generated-snippets"))
+//}
 
-test {
-    outputs.dir snippetsDir
-}
+//test {
+//    outputs.dir snippetsDir
+//}
 
-asciidoctor {
-    dependsOn test
-    sourceDir 'src/docs/asciidoc'
-    inputs.dir snippetsDir
-}
+//asciidoctor {
+//    dependsOn test
+//    sourceDir 'src/docs/asciidoc'
+//    inputs.dir snippetsDir
+//}
 
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/asciidoc/html5/")
-    into file("src/main/resources/static/docs")
-}
+//task copyDocument(type: Copy) {
+//    dependsOn asciidoctor
+//    from file("build/asciidoc/html5/")
+//    into file("src/main/resources/static/docs")
+//}
 
-build {
-    dependsOn copyDocument
-}
+//build {
+//    dependsOn copyDocument
+//}
 
 jib {
     from {
