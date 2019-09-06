@@ -16,7 +16,8 @@ podTemplate(
 )
 {
     node(label) {
-        def IMAGE_REPOSITORY = "registry.hub.docker.com"
+        //def IMAGE_REPOSITORY = "registry.hub.docker.com"
+
         def DOCKER_HUB_USER = "yim0823"
         def DOCKER_HUB_PASSWORD = "hyoung0823"
 
