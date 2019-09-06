@@ -18,8 +18,8 @@ podTemplate(
     node(label) {
         //def IMAGE_REPOSITORY = "registry.hub.docker.com"
 
-        def DOCKER_HUB_USER = "yim0823"
-        def DOCKER_HUB_PASSWORD = "hyoung0823"
+        //def DOCKER_HUB_USER = "yim0823"
+        //def DOCKER_HUB_PASSWORD = "hyoung0823"
 
         def myRepo = checkout scm
         def gitCommit = myRepo.GIT_COMMIT

@@ -1,7 +1,7 @@
 FROM alpine:3.10 as packager
 MAINTAINER Taehyoung Yim <yim0823@naver.com>
 
-RUN apk --no-cache add openjdk11-jdk openjdk11-jmods
+RUN apk --no-cache add openjdk11 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
 ENV JAVA_MINIMAL="/opt/java-minimal"
 
