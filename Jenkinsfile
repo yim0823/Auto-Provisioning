@@ -16,7 +16,9 @@ podTemplate(
 )
 {
     node(label) {
-        def appImage = "registry.hub.docker.com/yim0823"
+        def IMAGE_REPOSITORY = "registry.hub.docker.com"
+        def DOCKER_HUB_USER = "yim0823"
+        def DOCKER_HUB_PASSWORD = "hyoung0823"
 
         def myRepo = checkout scm
         def gitCommit = myRepo.GIT_COMMIT
@@ -50,14 +52,14 @@ podTemplate(
             container('docker') {
                 withCredentials([[
                     $class: 'UsernamePasswordMultiBinding',
-                    credentialsId: 'dockerHubAccount',
-                    usernameVariable: 'yim0823',
-                    passwordVariable: 'hyoung0823'
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_HUB_USER',
+                    passwordVariable: 'DOCKER_HUB_PASSWORD'
                 ]]) {
                     sh """
                         docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-                        docker build -t yim0823/${appName}:${gitCommit} .
-                        docker push yim0823/${appName}:${gitCommit}
+                        docker build -t ${DOCKER_HUB_USER}/${appName}:${gitCommit} .
+                        docker push ${DOCKER_HUB_USER}/${appName}:${gitCommit}
                     """
                 }
             }
