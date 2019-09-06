@@ -50,14 +50,14 @@ podTemplate(
             container('docker') {
                 withCredentials([[
                     $class: 'UsernamePasswordMultiBinding',
-                    credentialsId: 'dockerhub',
+                    credentialsId: 'dockerHubAccount',
                     usernameVariable: 'yim0823',
                     passwordVariable: 'hyoung0823'
                 ]]) {
                     sh """
                         docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-                        docker build -t namespace/my-image:${gitCommit} .
-                        docker push namespace/my-image:${gitCommit}
+                        docker build -t yim0823/${appName}:${gitCommit} .
+                        docker push yim0823/${appName}:${gitCommit}
                     """
                 }
             }
