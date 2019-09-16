@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auto-provisioning-deployment
+  name: deployment-dcos-auto-provisioning-api
   labels:
-    app: dcos
+    app: dcos-auto-provisioning
 spec:
   replicas: 2
   minReadySeconds: 30
@@ -14,11 +14,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: auto-provisioning-api
+      app: dcos-auto-provisioning
   template:
     metadata:
       labels:
-        app: auto-provisioning-api
+        app: dcos-auto-provisioning
     spec:
       containers:
         - image: yim0823/auto-provisioning:0.0.1
