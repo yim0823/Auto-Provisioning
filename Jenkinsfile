@@ -11,7 +11,8 @@ podTemplate(
     containers: [
         containerTemplate(name: 'gradle', image: 'gradle:5.6.1-jdk11', ttyEnabled: true, command: 'cat'),
         containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat', resourceLimitMemory: '64Mi'),
-        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.14.3', ttyEnabled: true, command: 'cat')
+        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', ttyEnabled: true, command: 'cat')
+        //containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:latest', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         hostPathVolume(mountPath: '/home/gradle/.gradle', hostPath: '/tmp/jenkins/.gradle'),
@@ -186,7 +187,7 @@ def build_chart(path = "") {
 def helm_init() {
     //setup helm connectivity to Kubernetes API and Tiller
     println "initiliazing helm client"
-    sh "helm init --upgrade --service-account tiller worked"
+    sh "helm init --upgrade --service-account tiller"
 
     println "checking client/server version"
     sh "helm version"
