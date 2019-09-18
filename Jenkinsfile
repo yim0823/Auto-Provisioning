@@ -184,7 +184,14 @@ def build_chart(path = "") {
 }
 
 def helm_init() {
-    sh "helm init && helm version"
+    //setup helm connectivity to Kubernetes API and Tiller
+    println "initiliazing helm client"
+    sh "helm init"
+
+    println "checking client/server version"
+    sh "helm version"
+
+    // sh "helm init && helm version"
 
     if (chartmuseum) {
         sh "helm repo add chartmuseum https://${chartmuseum}"
