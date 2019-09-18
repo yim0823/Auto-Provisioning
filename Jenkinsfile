@@ -97,7 +97,8 @@ podTemplate(
                     "Build Charts": {
                         container("helm") {
                             try {
-                                sh "helm init"
+                                sh "helm list"
+                                //sh "helm init"
                                 //build_chart()
                             } catch (exc) {
                                 println "Failed to build Chart - ${currentBuild.fullDisplayName}"
