@@ -186,7 +186,7 @@ def build_chart(path = "") {
 def helm_init() {
     //setup helm connectivity to Kubernetes API and Tiller
     println "initiliazing helm client"
-    sh "helm init"
+    sh "helm init --upgrade --service-account tiller worked"
 
     println "checking client/server version"
     sh "helm version"
