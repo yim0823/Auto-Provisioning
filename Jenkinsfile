@@ -29,12 +29,6 @@ podTemplate(
             }
         }
 
-        /* def myRepo = checkout scm
-        def gitCommit = myRepo.GIT_COMMIT
-        def gitBranch = myRepo.GIT_BRANCH
-        def shortGitCommit = "${gitCommit[0..10]}"
-        def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true) */
-
         stage("Checkout") {
             container("gradle") {
                 try {
@@ -103,7 +97,8 @@ podTemplate(
                     "Build Charts": {
                         container("helm") {
                             try {
-                                build_chart()
+                                sh "helm init"
+                                //build_chart()
                             } catch (exc) {
                                 println "Failed to build Chart - ${currentBuild.fullDisplayName}"
                                 throw(exc)
@@ -191,8 +186,6 @@ def helm_init() {
 
     println "checking client/server version"
     sh "helm version"
-
-    // sh "helm init && helm version"
 
     if (chartmuseum) {
         sh "helm repo add chartmuseum https://${chartmuseum}"
