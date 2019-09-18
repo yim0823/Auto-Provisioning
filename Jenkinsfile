@@ -1,6 +1,7 @@
 def appName = "auto-provisioning"
 def label = "${appName}-${UUID.randomUUID().toString()}"
 
+def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
 
