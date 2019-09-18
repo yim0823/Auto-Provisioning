@@ -184,11 +184,11 @@ def build_chart(path = "") {
 }
 
 def helm_init() {
-    sh "helm init --client-only && helm version"
+    sh "helm init --client-only"
 
     if (chartmuseum) {
         sh "helm repo add chartmuseum https://${chartmuseum}"
     }
 
-    sh "helm repo update"
+    sh "sudo helm repo list && helm repo update"
 }
