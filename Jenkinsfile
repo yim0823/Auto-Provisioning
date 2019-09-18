@@ -1,6 +1,9 @@
 def appName = "auto-provisioning"
 def label = "${appName}-${UUID.randomUUID().toString()}"
 
+def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
+def REPOSITORY_SECRET = ""
+
 podTemplate(
     label: label,
     containers: [
@@ -16,13 +19,24 @@ podTemplate(
 )
 {
     node(label) {
+
+        /* def myRepo = checkout scm
+        def gitCommit = myRepo.GIT_COMMIT
+        def gitBranch = myRepo.GIT_BRANCH
+        def shortGitCommit = "${gitCommit[0..10]}"
+        def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true) */
+
         stage("Checkout") {
             container('builder') {
-                def myRepo = checkout scm
-                def gitCommit = myRepo.GIT_COMMIT
-                def gitBranch = myRepo.GIT_BRANCH
-                def shortGitCommit = "${gitCommit[0..10]}"
-                def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
+                try {
+                    if (REPOSITORY_SECRET) {
+                        git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
+                    } else {
+                        git(url: REPOSITORY_URL, branch: BRANCH_NAME)
+                    }
+                } catch (exc) {
+                    throw(exc)
+                }
             }
         }
 
