@@ -98,7 +98,7 @@ podTemplate(
                             }
                         }
                     },
-                    "Build Charts" {
+                    "Build Charts": {
                         container("helm") {
                             try {
                                 build_chart()
