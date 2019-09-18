@@ -1,156 +1,94 @@
-def SERVICE_GROUP = "dcos"
-def SERVICE_NAME = "auto-provisioning"
-def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
-def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
-def REPOSITORY_SECRET = ""
-def SLACK_TOKEN_DEV = ""
-def SLACK_TOKEN_DQA = ""
+def appName = "auto-provisioning"
+def label = "${appName}-${UUID.randomUUID().toString()}"
 
-@Library("github.com/opsnow-tools/valve-butler")
-def butler = new com.opsnow.valve.v7.Butler()
-def label = "worker-${UUID.randomUUID().toString()}"
+podTemplate(
+    label: label,
+    containers: [
+        containerTemplate(name: 'gradle', image: 'gradle:5.6.1-jdk11', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat', resourceLimitMemory: '64Mi'),
+        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', ttyEnabled: true, command: 'cat')
+    ],
+    volumes: [
+        hostPathVolume(mountPath: '/home/gradle/.gradle', hostPath: '/tmp/jenkins/.gradle'),
+        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+    ]
+)
+{
+    node(label) {
+        //def IMAGE_REPOSITORY = "registry.hub.docker.com"
 
-properties([
-  buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
-])
-podTemplate(label: label, containers: [
-  containerTemplate(name: "builder", image: "opsnowtools/valve-builder:v0.2.2", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: 'gradle', image: 'gradle:5.6.1-jdk11', command: 'cat'ttyEnabled: true)
-], volumes: [
-  hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
-  hostPathVolume(mountPath: "/home/jenkins/.draft", hostPath: "/home/jenkins/.draft"),
-  hostPathVolume(mountPath: "/home/jenkins/.helm", hostPath: "/home/jenkins/.helm")
-]) {
-  node(label) {
-    stage("Prepare") {
-      container("builder") {
-        butler.prepare(IMAGE_NAME)
-      }
-    }
-    stage("Checkout") {
-      container("builder") {
-        try {
-          if (REPOSITORY_SECRET) {
-            git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
-          } else {
-            git(url: REPOSITORY_URL, branch: BRANCH_NAME)
-          }
-        } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Checkout")
-          throw e
-        }
+        //def DOCKER_HUB_USER = "yim0823"
+        //def DOCKER_HUB_PASSWORD = "hyoung0823"
 
-        butler.scan("java")
-      }
-    }
-    stage("Build") {
-      container("gradle") {
-        try {
-          // TODO: Features to be added to the butler
-          sh "gradle build -x test"
-          butler.success(SLACK_TOKEN_DEV, "Build")
-        } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Build")
-          throw e
-        }
-      }
-    }
-    stage("Tests") {
-      container("gradle") {
-        try {
-          // TODO: Features to be added to the butler
-          sh "gradle test"
-        } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Tests")
-          throw e
-        }
-      }
-    }
-    if (BRANCH_NAME == "master") {
-      stage("Build Image") {
-        parallel(
-          "Build Docker": {
-            container("builder") {
-              try {
-                butler.build_image()
-              } catch (e) {
-                butler.failure(SLACK_TOKEN_DEV, "Build Docker")
-                throw e
-              }
+        def myRepo = checkout scm
+        def gitCommit = myRepo.GIT_COMMIT
+        def gitBranch = myRepo.GIT_BRANCH
+        def shortGitCommit = "${gitCommit[0..10]}"
+        def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
+
+        echo "${gitBranch}"
+
+        /* stage('Test') {
+            try {
+                container('gradle') {
+                    sh """
+                        pwd
+                        echo "GIT_BRANCH=${gitBranch}" >> /etc/environment
+                        echo "GIT_COMMIT=${gitCommit}" >> /etc/environment
+                        gradle test
+                    """
+                }
+            } catch (exc) {
+                println "Failed to test - ${currentBuild.fullDisplayName}"
+                throw(exc)
             }
-          },
-          "Build Charts": {
-            container("builder") {
-              try {
-                butler.build_chart()
-              } catch (e) {
-                butler.failure(SLACK_TOKEN_DEV, "Build Charts")
-                throw e
-              }
+        } */
+
+        stage('Gradle build') {
+            container('gradle') {
+                try {
+                    sh "gradle build -x test"
+                } catch (exc) {
+                    throw(exc)
+                }
             }
-          }
-        )
-      }
-      stage("Deploy DEV") {
-        container("builder") {
-          try {
-            // deploy(cluster, namespace, sub_domain, profile)
-            butler.deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
-            butler.success(SLACK_TOKEN_DEV, "Deploy DEV")
-          } catch (e) {
-            butler.failure(SLACK_TOKEN_DEV, "Deploy DEV")
-            throw e
-          }
         }
-      }
-      stage("Request STAGE") {
-        container("builder") {
-          butler.proceed(SLACK_TOKEN_DEV, "Request STAGE", "stage")
-          timeout(time: 60, unit: "MINUTES") {
-            input(message: "${butler.name} ${butler.version} to stage")
-          }
+
+        if (gitBranch == "master") {
+            stage('Build docker-image') {
+                parallel(
+                    "Build Docker": {
+                        container('builder') {
+                            withCredentials([[
+                                $class: 'UsernamePasswordMultiBinding',
+                                credentialsId: 'dockerhub',
+                                usernameVariable: 'DOCKER_HUB_USER',
+                                passwordVariable: 'DOCKER_HUB_PASSWORD'
+                            ]]) {
+                                try {
+                                    sh """
+                                        docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+                                        docker build -t ${DOCKER_HUB_USER}/${appName}:${gitCommit} .
+                                        docker push ${DOCKER_HUB_USER}/${appName}:${gitCommit}
+                                    """
+                                } catch (exc) {
+                                    throw(exc)
+                                }
+                            }
+                        }
+                    }
+                )
+
+            }
         }
-      }
-      stage("Proceed STAGE") {
-        container("builder") {
-          butler.proceed(SLACK_TOKEN_DQA, "Deploy STAGE", "stage")
-          timeout(time: 60, unit: "MINUTES") {
-            input(message: "${butler.name} ${butler.version} to stage")
-          }
+
+        stage('Run kubectl') {
+            container('kubectl') {
+                sh "kubectl get pods"
+            }
         }
-      }
-      stage("Deploy STAGE") {
-        container("builder") {
-          try {
-            // deploy(cluster, namespace, sub_domain, profile)
-            butler.deploy("dev", "${SERVICE_GROUP}-stage", "${IMAGE_NAME}-stage", "stage")
-            butler.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
-          } catch (e) {
-            butler.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy STAGE")
-            throw e
-          }
-        }
-      }
-      stage("Proceed PROD") {
-        container("builder") {
-          butler.proceed(SLACK_TOKEN_DQA, "Deploy PROD", "prod")
-          timeout(time: 60, unit: "MINUTES") {
-            input(message: "${butler.name} ${butler.version} to prod")
-          }
-        }
-      }
-      stage("Deploy PROD") {
-        container("builder") {
-          try {
-            // deploy(cluster, namespace, sub_domain, profile)
-            butler.deploy("prod", "${SERVICE_GROUP}-prod", "${IMAGE_NAME}", "prod")
-            butler.success([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
-          } catch (e) {
-            butler.failure([SLACK_TOKEN_DEV,SLACK_TOKEN_DQA], "Deploy PROD")
-            throw e
-          }
-        }
-      }
+
+
     }
-  }
 }
