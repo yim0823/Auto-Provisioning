@@ -49,7 +49,7 @@ podTemplate(
 {
     node(label) {
         stage("Prepare") {
-            container("builder") {
+            container("gradle") {
                 prepare(appName, VERSION)
             }
         }
@@ -61,7 +61,7 @@ podTemplate(
         def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true) */
 
         stage("Checkout") {
-            container('builder') {
+            container("gradle") {
                 try {
                     if (REPOSITORY_SECRET) {
                         git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
@@ -74,9 +74,9 @@ podTemplate(
             }
         }
 
-        /* stage('Test') {
+        /* stage("Tests") {
             try {
-                container('gradle') {
+                container("gradle") {
                     sh """
                         pwd
                         echo "GIT_BRANCH=${gitBranch}" >> /etc/environment
@@ -90,8 +90,8 @@ podTemplate(
             }
         } */
 
-        stage('Gradle build') {
-            container('gradle') {
+        stage("Gradle build") {
+            container("gradle") {
                 try {
                     sh "gradle build -x test"
                 } catch (exc) {
@@ -101,10 +101,10 @@ podTemplate(
         }
 
         if (BRANCH_NAME == "master") {
-            stage('Build docker-image') {
+            stage("Build docker-image") {
                 parallel(
                     "Build Docker": {
-                        container('builder') {
+                        container('docker') {
                             withCredentials([[
                                 $class: 'UsernamePasswordMultiBinding',
                                 credentialsId: 'dockerhub',
@@ -128,8 +128,8 @@ podTemplate(
             }
         }
 
-        stage('Run kubectl') {
-            container('kubectl') {
+        stage("Run kubectl") {
+            container("kubectl") {
                 sh "kubectl get pods"
             }
         }
