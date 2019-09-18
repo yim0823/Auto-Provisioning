@@ -16,18 +16,15 @@ podTemplate(
 )
 {
     node(label) {
-        //def IMAGE_REPOSITORY = "registry.hub.docker.com"
-
-        //def DOCKER_HUB_USER = "yim0823"
-        //def DOCKER_HUB_PASSWORD = "hyoung0823"
-
-        def myRepo = checkout scm
-        def gitCommit = myRepo.GIT_COMMIT
-        def gitBranch = myRepo.GIT_BRANCH
-        def shortGitCommit = "${gitCommit[0..10]}"
-        def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
-
-        echo "${gitBranch}"
+        stage("Checkout") {
+            container('builder') {
+                def myRepo = checkout scm
+                def gitCommit = myRepo.GIT_COMMIT
+                def gitBranch = myRepo.GIT_BRANCH
+                def shortGitCommit = "${gitCommit[0..10]}"
+                def previousGitCommit = sh(script: "git rev-parse ${gitCommit}~", returnStdout: true)
+            }
+        }
 
         /* stage('Test') {
             try {
@@ -55,7 +52,7 @@ podTemplate(
             }
         }
 
-        if (gitBranch == "master") {
+        if (gitBranch.contain("master")) {
             stage('Build docker-image') {
                 parallel(
                     "Build Docker": {
