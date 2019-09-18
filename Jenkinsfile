@@ -11,7 +11,6 @@ podTemplate(
     containers: [
         containerTemplate(name: 'gradle', image: 'gradle:5.6.1-jdk11', ttyEnabled: true, command: 'cat'),
         containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat', resourceLimitMemory: '64Mi'),
-        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', ttyEnabled: true, command: 'cat'),
         containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', ttyEnabled: true, command: 'cat')
     ],
     volumes: [
@@ -113,11 +112,6 @@ podTemplate(
                 )
             }
 
-            stage("Run kubectl") {
-                container("kubectl") {
-                    sh "kubectl get pods"
-                }
-            }
         }
     }
 }
@@ -190,17 +184,11 @@ def build_chart(path = "") {
 }
 
 def helm_init() {
-    sh """
-        helm init --client-only && \
-        helm version
-    """
+    sh "helm init --client-only && helm version"
 
     if (chartmuseum) {
         sh "helm repo add chartmuseum https://${chartmuseum}"
     }
 
-    sh """
-        helm repo list && \
-        helm repo update
-    """
+    sh "sudo helm repo list && helm repo update"
 }
