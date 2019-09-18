@@ -6,33 +6,6 @@ def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
 def VERSION = ""
 
-def prepare(name = "sample", version = "") {
-    // image name
-    this.name = name
-
-    echo "# name: ${name}"
-
-    set_version(version)
-
-    this.cluster = ""
-    this.namespace = ""
-    this.sub_domain = ""
-    this.values_home = ""
-
-}
-
-def set_version(version = "") {
-    // version
-    if (!version) {
-        date = (new Date()).format('yyyyMMdd-HHmm')
-        version = "v0.0.1-${date}"
-    }
-
-    this.version = version
-
-    echo "# version: ${version}"
-}
-
 podTemplate(
     label: label,
     containers: [
@@ -95,6 +68,7 @@ podTemplate(
                 try {
                     sh "gradle build -x test"
                 } catch (exc) {
+                    println "Failed to gradle - ${currentBuild.fullDisplayName}"
                     throw(exc)
                 }
             }
@@ -118,22 +92,113 @@ podTemplate(
                                         docker push ${DOCKER_HUB_USER}/${name}:${version}
                                     """
                                 } catch (exc) {
+                                    println "Failed to build docker - ${currentBuild.fullDisplayName}"
                                     throw(exc)
                                 }
                             }
                         }
+                    },
+                    "Build Charts" {
+                        container("helm") {
+                            try {
+                                build_chart()
+                            } catch (exc) {
+                                println "Failed to build Chart - ${currentBuild.fullDisplayName}"
+                                throw(exc)
+                            }
+                        }
                     }
                 )
+            }
 
+            stage("Run kubectl") {
+                container("kubectl") {
+                    sh "kubectl get pods"
+                }
             }
         }
-
-        stage("Run kubectl") {
-            container("kubectl") {
-                sh "kubectl get pods"
-            }
-        }
-
-
     }
+}
+
+def prepare(name = "sample", version = "") {
+    // image name
+    this.name = name
+
+    echo "# name: ${name}"
+
+    set_version(version)
+
+    this.cluster = ""
+    this.namespace = ""
+    this.sub_domain = ""
+    this.values_home = ""
+
+}
+
+def set_version(version = "") {
+    // version
+    if (!version) {
+        date = (new Date()).format('yyyyMMdd-HHmm')
+        version = "v0.0.1-${date}"
+    }
+
+    this.version = version
+
+    echo "# version: ${version}"
+}
+
+def build_chart(path = "") {
+    if (!name) {
+        echo "build_chart:name is null."
+        throw new RuntimeException("name is null.")
+    }
+    if (!version) {
+        echo "build_chart:version is null."
+        throw new RuntimeException("version is null.")
+    }
+    if (!path) {
+        path = "charts/${name}"
+    }
+
+    helm_init()
+
+    // helm plugin
+    count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
+    if ("${count}" == "0") {
+        sh """
+            helm plugin install https://github.com/chartmuseum/helm-push && \
+            helm plugin list
+        """
+    }
+
+    // helm push
+    dir("${path}") {
+        sh "helm lint ."
+
+        if (chartmuseum) {
+            sh "helm push . chartmuseum"
+        }
+    }
+
+    // helm repo
+    sh """
+        helm repo update && \
+        helm search ${name}
+    """
+}
+
+def helm_init() {
+    sh """
+        helm init --client-only && \
+        helm version
+    """
+
+    if (chartmuseum) {
+        sh "helm repo add chartmuseum https://${chartmuseum}"
+    }
+
+    sh """
+        helm repo list && \
+        helm repo update
+    """
 }
