@@ -4,6 +4,34 @@ def label = "${appName}-${UUID.randomUUID().toString()}"
 def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
+def VERSION = ""
+
+def prepare(name = "sample", version = "") {
+    // image name
+    this.name = name
+
+    echo "# name: ${name}"
+
+    set_version(version)
+
+    this.cluster = ""
+    this.namespace = ""
+    this.sub_domain = ""
+    this.values_home = ""
+
+}
+
+def set_version(version = "") {
+    // version
+    if (!version) {
+        date = (new Date()).format('yyyyMMdd-HHmm')
+        version = "v0.0.1-${date}"
+    }
+
+    this.version = version
+
+    echo "# version: ${version}"
+}
 
 podTemplate(
     label: label,
@@ -20,6 +48,11 @@ podTemplate(
 )
 {
     node(label) {
+        stage("Prepare") {
+            container("builder") {
+                prepare(appName, VERSION)
+            }
+        }
 
         /* def myRepo = checkout scm
         def gitCommit = myRepo.GIT_COMMIT
@@ -67,7 +100,7 @@ podTemplate(
             }
         }
 
-        if (gitBranch.contain("master")) {
+        if (BRANCH_NAME == "master") {
             stage('Build docker-image') {
                 parallel(
                     "Build Docker": {
@@ -81,8 +114,8 @@ podTemplate(
                                 try {
                                     sh """
                                         docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
-                                        docker build -t ${DOCKER_HUB_USER}/${appName}:${gitCommit} .
-                                        docker push ${DOCKER_HUB_USER}/${appName}:${gitCommit}
+                                        docker build -t ${DOCKER_HUB_USER}/${name}:${version} .
+                                        docker push ${DOCKER_HUB_USER}/${name}:${version}
                                     """
                                 } catch (exc) {
                                     throw(exc)
