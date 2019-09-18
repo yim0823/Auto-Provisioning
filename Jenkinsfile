@@ -11,7 +11,7 @@ podTemplate(
     containers: [
         containerTemplate(name: 'gradle', image: 'gradle:5.6.1-jdk11', ttyEnabled: true, command: 'cat'),
         containerTemplate(name: 'docker', image: 'docker', ttyEnabled: true, command: 'cat', resourceLimitMemory: '64Mi'),
-        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', ttyEnabled: true, command: 'cat')
+        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.14.3', ttyEnabled: true, command: 'cat')
     ],
     volumes: [
         hostPathVolume(mountPath: '/home/gradle/.gradle', hostPath: '/tmp/jenkins/.gradle'),
