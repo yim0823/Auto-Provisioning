@@ -1,7 +1,6 @@
 def appName = "auto-provisioning"
 def label = "${appName}-${UUID.randomUUID().toString()}"
 
-def chartmuseum = ""
 def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
@@ -20,7 +19,7 @@ def prepare(name = "sample", version = "") {
     this.namespace = ""
     this.sub_domain = ""
     this.values_home = ""
-
+    this.chartmuseum = ""
 }
 
 def set_version(version = "") {
