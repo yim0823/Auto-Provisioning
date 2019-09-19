@@ -112,7 +112,9 @@ def env_namespace(namespace = "") {
     }
 }
 
-def  get_replicas() {
+def  get_replicas(namespace = "") {
+    env_namespace(namespace)
+
     // Keep latest pod count
     desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
     if (desired != "") {
@@ -121,6 +123,9 @@ def  get_replicas() {
 }
 
 def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_path = "") {
+
+    echo "#################### ${this.namespace} #################"
+
     if (!name) {
         echo "deploy:name is null."
         throw new RuntimeException("name is null.")
@@ -144,7 +149,6 @@ def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_p
         profile = namespace
     }
 
-    env_namespace(namespace)
     helm_init()
     this.sub_domain = sub_domain
 
@@ -315,7 +319,7 @@ podTemplate(
             stage("Deploy Dev") {
                 container("kubectl") {
                     try {
-                        get_replicas()
+                        get_replicas("${SERVICE_GROUP}-dev")
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
