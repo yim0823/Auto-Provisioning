@@ -313,24 +313,22 @@ podTemplate(
             }
 
             stage("Deploy Dev") {
-                steps {
-                    container("kubectl") {
-                        try {
-                            get_replicas()
-                        } catch (exc) {
-                            println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
-                            throw(exc)
-                        }
+                container("kubectl") {
+                    try {
+                        get_replicas()
+                    } catch (exc) {
+                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                        throw(exc)
                     }
-                    container("helm") {
-                        try {
-                            echo "################ ${this.extra_values} ###############"
-                            // deploy(cluster, namespace, sub_domain, profile)
-                            deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
-                        } catch (exc) {
-                            println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
-                            throw(exc)
-                        }
+                }
+                container("helm") {
+                    try {
+                        echo "################ ${this.extra_values} ###############"
+                        // deploy(cluster, namespace, sub_domain, profile)
+                        deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
+                    } catch (exc) {
+                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                        throw(exc)
                     }
                 }
             }
