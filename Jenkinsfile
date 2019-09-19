@@ -290,7 +290,7 @@ podTemplate(
                 container("kubectl") {
                     try {
                         // deploy(cluster, namespace, sub_domain, profile)
-                        deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+                        deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
