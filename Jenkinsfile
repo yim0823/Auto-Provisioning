@@ -1,10 +1,12 @@
-def appName = "auto-provisioning"
-def label = "${appName}-${UUID.randomUUID().toString()}"
-
+def SERVICE_GROUP = "dcos"
+def SERVICE_NAME = "auto-provisioning"
 def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
 def VERSION = ""
+
+def appName = "${SERVICE_GROUP}-${SERVICE_NAME}"
+def label = "${appName}-${UUID.randomUUID().toString()}"
 
 /* -------- functions ---------- */
 def prepare(name = "sample", version = "") {
@@ -192,6 +194,10 @@ podTemplate(
                     }
                 )
             }
+
+            //stage("Deploy Dev") {
+
+            //}
 
         }
     }
