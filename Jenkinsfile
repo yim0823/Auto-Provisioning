@@ -97,8 +97,7 @@ podTemplate(
                     "Build Charts": {
                         container("helm") {
                             try {
-                                sh "helm init"
-                                //build_chart()
+                                build_chart()
                             } catch (exc) {
                                 println "Failed to build Chart - ${currentBuild.fullDisplayName}"
                                 throw(exc)
@@ -182,7 +181,7 @@ def build_chart(path = "") {
 def helm_init() {
     //setup helm connectivity to Kubernetes API and Tiller
     println "initiliazing helm client"
-    sh "helm init"
+    sh "helm init --client-only"
 
     println "checking client/server version"
     sh "helm version"
