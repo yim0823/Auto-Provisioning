@@ -52,14 +52,12 @@ def build_chart(path = "") {
     helm_init()
 
     // helm plugin
-    if (chartmuseum) {
-        count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
-        if ("${count}" == "0") {
-            sh """
-                helm plugin install https://github.com/chartmuseum/helm-push && \
-                helm plugin list
-            """
-        }
+    count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
+    if ("${count}" == "0") {
+        sh """
+            helm plugin install https://github.com/chartmuseum/helm-push && \
+            helm plugin list
+        """
     }
 
     // helm push
