@@ -95,6 +95,94 @@ def chartmeseum_init() {
         """
     }
 }
+
+def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_path = "") {
+    if (!name) {
+        echo "deploy:name is null."
+        throw new RuntimeException("name is null.")
+    }
+    if (!version) {
+        echo "deploy:version is null."
+        throw new RuntimeException("version is null.")
+    }
+    if (!cluster) {
+        echo "deploy:cluster is null."
+        throw new RuntimeException("cluster is null.")
+    }
+    if (!namespace) {
+        echo "deploy:namespace is null."
+        throw new RuntimeException("namespace is null.")
+    }
+    if (!sub_domain) {
+        sub_domain = "${name}-${namespace}"
+    }
+    if (!profile) {
+        profile = namespace
+    }
+
+    env_namespace(namespace)
+    helm_init()
+    this.sub_domain = sub_domain
+
+    // extra_values (format = --set KEY=VALUE)
+    extra_values = ""
+
+    // latest version
+    if (version == "latest") {
+        version = sh(script: "helm search chartmuseum/${name} | grep ${name} | head -1 | awk '{print \$2}'", returnStdout: true).trim()
+        if (version == "") {
+            echo "deploy:latest version is null."
+            throw new RuntimeException("latest version is null.")
+        }
+    }
+
+    // Keep latest pod count
+    desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
+    if (desired != "") {
+        extra_values = "--set replicaCount=${desired}"
+    }
+
+    // values_path
+    if (!values_path) {
+        values_path = ""
+        if (values_home) {
+            count = sh(script: "ls ${values_home}/${name} | grep '${namespace}.yaml' | wc -l", returnStdout: true).trim()
+            if ("${count}" == "0") {
+                throw new RuntimeException("values_path not found.")
+            } else {
+                values_path = "${values_home}/${name}/${namespace}.yaml"
+            }
+        }
+    }
+
+    // helm install
+    if (values_path) {
+        sh """
+            helm upgrade --install ${name}-${namespace} local/${name} \
+                --version ${version} --namespace ${namespace} --devel \
+                --values ${values_path} \
+                --set namespace=${namespace} \
+                --set profile=${profile} \
+                ${extra_values}
+        """
+    } else {
+        sh """
+            helm upgrade --install ${name}-${namespace} local/${name} \
+                --version ${version} --namespace ${namespace} --devel \
+                --set fullnameOverride=${name} \
+                --set ingress.subdomain=${sub_domain} \
+                --set ingress.basedomain=${base_domain} \
+                --set namespace=${namespace} \
+                --set profile=${profile} \
+                ${extra_values}
+        """
+    }
+
+    sh """
+        helm search ${name} && \
+        helm history ${name}-${namespace} --max 10
+    """
+}
 /* ------------------------------ */
 
 podTemplate(
@@ -198,9 +286,17 @@ podTemplate(
                 )
             }
 
-            //stage("Deploy Dev") {
-
-            //}
+            stage("Deploy Dev") {
+                container("kubectl") {
+                    try {
+                        // deploy(cluster, namespace, sub_domain, profile)
+                        deploy("dev", "${SERVICE_GROUP}-dev", "${IMAGE_NAME}-dev", "dev")
+                    } catch (exc) {
+                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                        throw(exc)
+                    }
+                }
+            }
 
         }
     }
