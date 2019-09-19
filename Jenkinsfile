@@ -122,9 +122,10 @@ def  get_replicas(namespace = "") {
     }
 }
 
-def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_path = "") {
+def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
 
-    echo "#################### ${this.namespace} #################"
+    echo "######deploy############## ${this.namespace} #################"
+    echo "######deploy############## ${namespace} #################"
 
     if (!name) {
         echo "deploy:name is null."
@@ -327,9 +328,8 @@ podTemplate(
                 }
                 container("helm") {
                     try {
-                        echo "################ ${this.extra_values} ###############"
-                        // deploy(cluster, namespace, sub_domain, profile)
-                        deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
+                        // deploy(cluster, sub_domain, profile)
+                        deploy("dev", "${appName}-dev", "dev")
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
