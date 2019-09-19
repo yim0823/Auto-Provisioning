@@ -123,10 +123,6 @@ def  get_replicas(namespace = "") {
 }
 
 def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
-
-    echo "######deploy############## ${this.namespace} #################"
-    echo "######deploy############## ${namespace} #################"
-
     if (!name) {
         echo "deploy:name is null."
         throw new RuntimeException("name is null.")
@@ -174,6 +170,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     */
 
     // values_path
+    echo "#1.#####deploy############## ${values_path} ## ${path} ###############"
     if (!values_path) {
         values_path = ""
         if (values_home) {
@@ -185,6 +182,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
             }
         }
     }
+    echo "#2.#####deploy############## ${values_path} #################"
 
     // helm install
     if (values_path) {
@@ -328,7 +326,7 @@ podTemplate(
                 }
                 container("helm") {
                     try {
-                        // deploy(cluster, sub_domain, profile)
+                        // deploy(cluster, sub_domain, profile, values_path)
                         deploy("dev", "${appName}-dev", "dev")
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
