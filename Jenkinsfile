@@ -86,7 +86,7 @@ def helm_init() {
         sh "helm repo add chartmuseum https://${chartmuseum}"
     }
 
-    sh "sudo helm repo list && helm repo update"
+    sh "helm repo list && helm repo update"
 }
 /* ------------------------------ */
 
