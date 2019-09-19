@@ -302,7 +302,7 @@ podTemplate(
             }
 
             stage("Deploy Dev") {
-                container("kubectl") {
+                container("helm") {
                     try {
                         // deploy(cluster, namespace, sub_domain, profile)
                         deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
