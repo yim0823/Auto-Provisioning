@@ -96,6 +96,21 @@ def chartmeseum_init() {
     }
 }
 
+def env_namespace(namespace = "") {
+    if (!namespace) {
+        echo "env_namespace:namespace is null."
+        throw new RuntimeException("namespace is null.")
+    }
+
+    this.namespace = namespace
+
+    // check namespace
+    count = sh(script: "kubectl get ns ${namespace} 2>&1 | grep Active | grep ${namespace} | wc -l", returnStdout: true).trim()
+    if ("$count" == "0") {
+        sh "kubectl create namespace ${namespace}"
+    }
+}
+
 def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_path = "") {
     if (!name) {
         echo "deploy:name is null."
