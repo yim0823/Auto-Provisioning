@@ -51,26 +51,21 @@ def build_chart(path = "") {
 
     helm_init()
 
-    // helm plugin
-    /* count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
-    if ("${count}" == "0") {
-        sh """
-            helm plugin install https://github.com/chartmuseum/helm-push && \
-            helm plugin list
-        """
-    } */
+    if (chartmuseum) {
+        chartmeseum_init()
+    }
 
-    // helm push
     dir("${path}") {
         //Examines a chart for possible issues
         sh "helm lint ."
 
         if (chartmuseum) {
             sh "helm push . chartmuseum"
+        } else {
+            sh "helm package ."
         }
     }
 
-    // helm repo
     sh """
         helm repo update && \
         helm search ${name}
@@ -85,11 +80,20 @@ def helm_init() {
     println "checking client/server version"
     sh "helm version"
 
-    if (chartmuseum) {
-        sh "helm repo add chartmuseum https://${chartmuseum}"
-    }
-
     sh "helm repo list && helm repo update"
+}
+
+def chartmeseum_init() {
+    sh "helm repo add chartmuseum https://${chartmuseum}"
+
+    // helm plugin
+    count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
+    if ("${count}" == "0") {
+        sh """
+            helm plugin install https://github.com/chartmuseum/helm-push && \
+            helm plugin list
+        """
+    }
 }
 /* ------------------------------ */
 
