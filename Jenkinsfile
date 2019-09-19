@@ -22,6 +22,7 @@ def prepare(name = "sample", version = "") {
     this.sub_domain = ""
     this.values_home = ""
     this.chartmuseum = ""
+    this.extra_values = ""
 }
 
 def set_version(version = "") {
@@ -111,6 +112,14 @@ def env_namespace(namespace = "") {
     }
 }
 
+def  get_replicas() {
+    // Keep latest pod count
+    desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
+    if (desired != "") {
+        this.extra_values = "--set replicaCount=${desired}"
+    }
+}
+
 def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_path = "") {
     if (!name) {
         echo "deploy:name is null."
@@ -151,11 +160,13 @@ def deploy(cluster = "", namespace = "", sub_domain = "", profile = "", values_p
         }
     }
 
+    /*
     // Keep latest pod count
     desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
     if (desired != "") {
         extra_values = "--set replicaCount=${desired}"
     }
+    */
 
     // values_path
     if (!values_path) {
@@ -302,13 +313,24 @@ podTemplate(
             }
 
             stage("Deploy Dev") {
-                container("helm") {
-                    try {
-                        // deploy(cluster, namespace, sub_domain, profile)
-                        deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
-                    } catch (exc) {
-                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
-                        throw(exc)
+                steps {
+                    container("kubectl") {
+                        try {
+                            get_replicas()
+                        } catch (exc) {
+                            println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                            throw(exc)
+                        }
+                    }
+                    container("helm") {
+                        try {
+                            echo "################ ${this.extra_values} ###############"
+                            // deploy(cluster, namespace, sub_domain, profile)
+                            deploy("dev", "${SERVICE_GROUP}-dev", "${appName}-dev", "dev")
+                        } catch (exc) {
+                            println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                            throw(exc)
+                        }
                     }
                 }
             }
