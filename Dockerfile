@@ -10,6 +10,7 @@ CMD java \
     -XX:+HeapDumpOnOutOfMemoryError \
     -XX:HeapDumpPath=/opt/apps/hprof/heapdump.hprof \
     -jar /opt/apps/$ARTIFACT_NAME \
-    --spring.config.name=application
+    -Dspring.profiles.active=dev
+#    --spring.config.name=application
 
 #ENTRYPOINT ["java","-jar","/app.jar"]
