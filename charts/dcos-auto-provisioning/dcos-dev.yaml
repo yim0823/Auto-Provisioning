@@ -59,7 +59,7 @@ resources:
 
 readinessProbe:
   httpGet:
-    path: /
+    path: /health/healthcheck
     port: 30001
   initialDelaySeconds: 60
   periodSeconds: 10
@@ -67,7 +67,7 @@ readinessProbe:
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /health/healthcheck
     port: 30001
   initialDelaySeconds: 60
   periodSeconds: 10
