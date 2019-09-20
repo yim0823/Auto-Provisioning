@@ -176,16 +176,19 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     }
     */
 
+    test = sh(script: "pws")
+    echo "## pwd : ${test}"
+
     // values_path
     echo "#1.#####deploy############## ${values_home} ## ${path} ###############"
     if (!values_path) {
         values_path = ""
-        dir("${path}") {
-            count = sh(script: "ls ./${name} | grep '${namespace}.yaml' | wc -l", returnStdout: true).trim()
+        if (values_home) {
+            count = sh(script: "ls ${values_home}/${name} | grep '${namespace}.yaml' | wc -l", returnStdout: true).trim()
             if ("${count}" == "0") {
                 throw new RuntimeException("values_path not found.")
             } else {
-                values_path = "./${name}/${namespace}.yaml"
+                values_path = "${values_home}/${name}/${namespace}.yaml"
             }
         }
     }
