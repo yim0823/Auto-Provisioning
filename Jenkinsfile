@@ -176,7 +176,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     }
     */
 
-    test = sh(script: "pws")
+    test = sh(script: "pwd")
     echo "## pwd : ${test}"
 
     // values_path
