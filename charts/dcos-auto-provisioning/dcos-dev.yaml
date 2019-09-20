@@ -59,7 +59,7 @@ resources:
 
 readinessProbe:
   httpGet:
-    path: dcos-auto-provisioning.127.0.0.1.nip.io/health/healthcheck
+    path: /health/healthcheck
     port: 80
   initialDelaySeconds: 60
   periodSeconds: 10
@@ -67,7 +67,7 @@ readinessProbe:
 
 livenessProbe:
   httpGet:
-    path: dcos-auto-provisioning.127.0.0.1.nip.io/health/healthcheck
+    path: /health/healthcheck
     port: 80
   initialDelaySeconds: 60
   periodSeconds: 10
