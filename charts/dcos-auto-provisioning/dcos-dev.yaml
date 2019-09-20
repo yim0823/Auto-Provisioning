@@ -8,7 +8,7 @@ namespace: dcos
 
 image:
   repository: yim0823/dcos-auto-provisioning
-  tag: latest
+  tag: 0.0.1
   pullPolicy: Always
 
 labels: {}
