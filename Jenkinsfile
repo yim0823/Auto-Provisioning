@@ -3,8 +3,9 @@ def SERVICE_NAME = "auto-provisioning"
 def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
-def VERSION = ""
+def VERSION = "0.0.1"
 def VALUES_HOME = "charts"
+def PROFILE = "dev"
 
 def appName = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def label = "${appName}-${UUID.randomUUID().toString()}"
@@ -19,7 +20,6 @@ def prepare(name = "sample", version = "", values_home =".") {
     set_version(version)
     set_values_home(values_home)
 
-    this.cluster = ""
     this.namespace = ""
     this.sub_domain = ""
     this.chartmuseum = ""
@@ -130,7 +130,7 @@ def  get_replicas(namespace = "") {
     }
 }
 
-def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
+def deploy(sub_domain = "", profile = "", values_path = "") {
     if (!name) {
         echo "deploy:name is null."
         throw new RuntimeException("name is null.")
@@ -138,10 +138,6 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     if (!version) {
         echo "deploy:version is null."
         throw new RuntimeException("version is null.")
-    }
-    if (!cluster) {
-        echo "deploy:cluster is null."
-        throw new RuntimeException("cluster is null.")
     }
     if (!namespace) {
         echo "deploy:namespace is null."
@@ -323,8 +319,8 @@ podTemplate(
                 }
                 container("helm") {
                     try {
-                        // deploy(cluster, sub_domain, profile, values_path)
-                        deploy("dev", "${appName}-dev", "dev")
+                        // deploy(sub_domain, profile, values_path)
+                        deploy("${appName}-dev", PROFILE)
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
