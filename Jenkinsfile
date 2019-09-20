@@ -192,7 +192,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     // helm install
     if (values_path) {
         sh """
-            helm upgrade --install ${name}-${namespace} ${name} \
+            helm upgrade --install ${name}-${namespace} charts/${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --values ${values_path} \
                 --set namespace=${namespace} \
@@ -201,7 +201,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
         """
     } else {
         sh """
-            helm upgrade --install ${name}-${namespace} ${name} \
+            helm upgrade --install ${name}-${namespace} charts/${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --set fullnameOverride=${name} \
                 --set ingress.subdomain=${sub_domain} \
