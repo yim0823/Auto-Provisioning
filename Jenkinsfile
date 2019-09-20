@@ -124,7 +124,11 @@ def  get_replicas(namespace = "") {
 
     // Keep latest pod count
     desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
+
+    echo "#### desired : ${desired} ######"
+
     if (desired != "") {
+        // extra_values (format = --set KEY=VALUE)
         this.extra_values = "--set replicaCount=${desired}"
     }
 }
@@ -156,9 +160,6 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     helm_init()
     this.sub_domain = sub_domain
 
-    // extra_values (format = --set KEY=VALUE)
-    extra_values = ""
-
     // latest version
     if (version == "latest") {
         version = sh(script: "helm search chartmuseum/${name} | grep ${name} | head -1 | awk '{print \$2}'", returnStdout: true).trim()
@@ -176,11 +177,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     }
     */
 
-    test = sh(script: "pwd")
-    echo "## pwd : ${test}"
-
     // values_path
-    echo "#1.#####deploy############## ${values_home} ## ${path} ###############"
     if (!values_path) {
         values_path = ""
         if (values_home) {
@@ -194,12 +191,13 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
             values_path = "charts/${name}/${namespace}.yaml"
         }
     }
-    echo "#2.#####deploy############## ${values_path} #################"
+
+    echo "#### this.extra_values : ${extra_values} ######"
 
     // helm install
     if (values_path) {
         sh """
-            helm upgrade --install ${name}-${namespace} local/${name} \
+            helm upgrade --install ${name}-${namespace} ./${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --values ${values_path} \
                 --set namespace=${namespace} \
@@ -208,7 +206,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
         """
     } else {
         sh """
-            helm upgrade --install ${name}-${namespace} local/${name} \
+            helm upgrade --install ${name}-${namespace} ./${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --set fullnameOverride=${name} \
                 --set ingress.subdomain=${sub_domain} \
