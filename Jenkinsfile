@@ -190,6 +190,8 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
             } else {
                 values_path = "${values_home}/${name}/${namespace}.yaml"
             }
+        } else {
+            values_path = "charts/${name}/${namespace}.yaml"
         }
     }
     echo "#2.#####deploy############## ${values_path} #################"
