@@ -57,21 +57,21 @@ resources:
     cpu: 300m
     memory: 1252Mi
 
-readinessProbe:
-  httpGet:
-    path: /health/healthcheck
-    port: 80
-  initialDelaySeconds: 60
-  periodSeconds: 10
-  failureThreshold: 3
-
-livenessProbe:
-  httpGet:
-    path: /health/healthcheck
-    port: 80
-  initialDelaySeconds: 60
-  periodSeconds: 10
-  failureThreshold: 3
+#readinessProbe:
+#  httpGet:
+#    path: /health/healthcheck
+#    port: 80
+#  initialDelaySeconds: 60
+#  periodSeconds: 10
+#  failureThreshold: 3
+#
+#livenessProbe:
+#  httpGet:
+#    path: /health/healthcheck
+#    port: 80
+#  initialDelaySeconds: 60
+#  periodSeconds: 10
+#  failureThreshold: 3
 
 # livenessProbe:
 #   exec:
