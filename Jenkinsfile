@@ -4,23 +4,24 @@ def BRANCH_NAME = "master"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
 def VERSION = ""
+def VALUES_HOME = "."
 
 def appName = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def label = "${appName}-${UUID.randomUUID().toString()}"
 
 /* -------- functions ---------- */
-def prepare(name = "sample", version = "") {
+def prepare(name = "sample", version = "", values_home =".") {
     // image name
     this.name = name
 
     echo "# name: ${name}"
 
     set_version(version)
+    set_values_home(values_home)
 
     this.cluster = ""
     this.namespace = ""
     this.sub_domain = ""
-    this.values_home = ""
     this.chartmuseum = ""
     this.extra_values = ""
 }
@@ -35,6 +36,12 @@ def set_version(version = "") {
     this.version = version
 
     echo "# version: ${version}"
+}
+
+def set_values_home(values_home = "") {
+    this.values_home = values_home
+
+    echo "# values_home: ${values_home}"
 }
 
 def build_chart(path = "") {
@@ -170,7 +177,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
     */
 
     // values_path
-    echo "#1.#####deploy############## ${values_path} ## ${path} ###############"
+    echo "#1.#####deploy############## ${values_home} ## ${path} ###############"
     if (!values_path) {
         values_path = ""
         if (values_home) {
@@ -233,7 +240,7 @@ podTemplate(
     node(label) {
         stage("Prepare") {
             container("gradle") {
-                prepare(appName, VERSION)
+                prepare(appName, VERSION, VALUES_HOME)
             }
         }
 
