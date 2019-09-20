@@ -263,7 +263,7 @@ podTemplate(
         stage("Gradle build") {
             container("gradle") {
                 try {
-                    sh "gradle build -x test"
+                    sh "gradle clean build -x test Pprofile=dev"
                 } catch (exc) {
                     println "Failed to gradle - ${currentBuild.fullDisplayName}"
                     throw(exc)
