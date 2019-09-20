@@ -59,16 +59,16 @@ resources:
 
 readinessProbe:
   httpGet:
-    path: /health/healthcheck
-    port: 30001
+    path: dcos-auto-provisioning.127.0.0.1.nip.io/health/healthcheck
+    port: 80
   initialDelaySeconds: 60
   periodSeconds: 10
   failureThreshold: 3
 
 livenessProbe:
   httpGet:
-    path: /health/healthcheck
-    port: 30001
+    path: dcos-auto-provisioning.127.0.0.1.nip.io/health/healthcheck
+    port: 80
   initialDelaySeconds: 60
   periodSeconds: 10
   failureThreshold: 3
