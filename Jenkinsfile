@@ -124,9 +124,6 @@ def  get_replicas(namespace = "") {
 
     // Keep latest pod count
     desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
-
-    echo "#### desired : ${desired} ######"
-
     if (desired != "") {
         // extra_values (format = --set KEY=VALUE)
         this.extra_values = "--set replicaCount=${desired}"
@@ -192,12 +189,10 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
         }
     }
 
-    echo "#### this.extra_values : ${extra_values} ######"
-
     // helm install
     if (values_path) {
         sh """
-            helm upgrade --install ${name}-${namespace} ./${name} \
+            helm upgrade --install ${name}-${namespace} ${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --values ${values_path} \
                 --set namespace=${namespace} \
@@ -206,7 +201,7 @@ def deploy(cluster = "", sub_domain = "", profile = "", values_path = "") {
         """
     } else {
         sh """
-            helm upgrade --install ${name}-${namespace} ./${name} \
+            helm upgrade --install ${name}-${namespace} ${name} \
                 --version ${version} --namespace ${namespace} --devel \
                 --set fullnameOverride=${name} \
                 --set ingress.subdomain=${sub_domain} \
