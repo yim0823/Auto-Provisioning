@@ -35,21 +35,23 @@ def prepare(name = "sample", version = "", values_home =".") {
 }
 
 def load_properties() {
-    node {
-        props = new Properties()
-        File propertiesFile = new File("./pipeline.properties")
-        props.load(propertiesFile.newDataInputStream())
-        echo "## Immediate one ${props.version}"
-/*
-        def props = readProperties  file:"./pipeline.properties"
-        if (!props.exists()) {
-            echo "######## There is no properties file"
+    script {
+        node {
+            props = new Properties()
+            File propertiesFile = new File("./pipeline.properties")
+            props.load(propertiesFile.newDataInputStream())
+            echo "## Immediate one ${props.version}"
+    /*
+            def props = readProperties  file:"./pipeline.properties"
+            if (!props.exists()) {
+                echo "######## There is no properties file"
+            }
+    */
+            VERSION = props.version
+            PROFILE = props.profile
+            BRANCH_NAME = props.branch_name
+            VALUES_HOME = props.values_home
         }
-*/
-        VERSION = props.version
-        PROFILE = props.profile
-        BRANCH_NAME = props.branch_name
-        VALUES_HOME = props.values_home
     }
 }
 
