@@ -43,15 +43,21 @@ def load_properties() {
             props.load(propertiesFile.newDataInputStream())
             echo "## Immediate one ${props.version}"
 
+            if (!props.exists()) {
+                echo "######## There is no properties file"
+            }
+
             VERSION = props.version
             PROFILE = props.profile
             BRANCH_NAME = props.branch_name
             VALUES_HOME = props.values_home
         */
-            def props = readProperties  file:"./pipeline.properties"
-            if (!props.exists()) {
-                echo "######## There is no properties file"
+
+            if (!fileExists('pipeline.properties')) {
+                echo '### No pipeline.properties.'
+                exit
             }
+            def props = readProperties  file:"./pipeline.properties"
 
             VERSION = props['version']
             PROFILE = props['profile']
