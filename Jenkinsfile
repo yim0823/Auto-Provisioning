@@ -57,7 +57,7 @@ def load_properties() {
                 echo '### No pipeline.properties.'
                 exit
             }
-            def props = readProperties  file:"./pipeline.properties"
+            def props = readProperties  file:"pipeline.properties"
 
             VERSION = props['version']
             PROFILE = props['profile']
