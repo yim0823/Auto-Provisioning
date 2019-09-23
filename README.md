@@ -48,7 +48,8 @@ sourceSets {
  - deploy dev 이후 로직 개발 필요
  - liveness/readiness probe 실패, spring boot actuator 사용 but, connection refuse
  - properties 적용 - 완료
- - slack 연동 필요
+ - slack 연동 적용 - 완료
+   - 단계마다 slack 메시지 보내는 로직 필요
  - chartmuseum 적용 필요
 
 # Appendix
