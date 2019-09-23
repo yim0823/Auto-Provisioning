@@ -30,11 +30,25 @@ src
      |_ resources-local
             |_ application-local.properties
 
+build.gradle
+```aidl
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
+        }
+    }
+}
+```
+
 ## CI/CD 적용
 남은 것
  - deploy dev 이후 로직 개발 필요
  - liveness/readiness probe 실패, spring boot actuator 사용 but, connection refuse
  - properties 적용 - 완료
+ - slack 연동 필요
  - chartmuseum 적용 필요
 
 # Appendix

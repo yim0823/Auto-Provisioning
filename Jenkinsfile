@@ -25,9 +25,9 @@ def prepare(name = "sample") {
 
     def props = readProperties  file:"pipeline.properties"
 
-    VERSION = props['version']
-    PROFILE = props['profile']
-    VALUES_HOME = props['values_home']
+    VERSION = props['deploy.app.version']
+    PROFILE = props['deploy.app.profile']
+    VALUES_HOME = props['deploy.chart.values_home']
 
     echo "# VERSION : ${VERSION}"
     echo "# PROFILE : ${PROFILE}"
@@ -219,6 +219,10 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
     """
 }
 
+def notify_slack(STATUS, COLOR) {
+    slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})"
+}
+
 podTemplate(
     label: label,
     containers: [
@@ -334,7 +338,12 @@ podTemplate(
                     try {
                         // -- deploy(sub_domain, profile, values_path)
                         deploy("${IMAGE_NAME}-dev", PROFILE)
+
+                        notifySlack("${currentBuild.currentResult}", "#00FF00")
                     } catch (exc) {
+                        currentBuild.result = "FAILED"
+                        notifySlack("${currentBuild.currentResult}", "#FF0000")
+
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
                     }
