@@ -1,21 +1,34 @@
 def SERVICE_GROUP = "dcos"
 def SERVICE_NAME = "auto-provisioning"
-def BRANCH_NAME = "master"
+def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
-def VERSION = "0.0.1"
-def VALUES_HOME = "charts"
-def PROFILE = "dev"
 
-def appName = "${SERVICE_GROUP}-${SERVICE_NAME}"
-def label = "${appName}-${UUID.randomUUID().toString()}"
+//def VERSION = "0.0.1"
+//def VALUES_HOME = "charts"
+//def PROFILE = "dev"
+//def BRANCH_NAME = "master"
 
-/* -------- functions ---------- */
+def label = "worker-${UUID.randomUUID().toString()}"
+
+/* -------- Functions ---------- */
 def prepare(name = "sample", version = "", values_home =".") {
     // image name
     this.name = name
 
     echo "# name: ${name}"
+
+    // -- Read the environment variables file to set variables
+    def props = readProperties  file:"pipeline.properties"
+    def version = props["version"]
+    def profile = props["profile"]
+    def branch_name = props["branch_name"]
+    def values_home = props["values_home"]
+
+    echo "${version}"
+    echo "${profile}"
+    echo "${branch_name}"
+    echo "${values_home}"
 
     set_version(version)
     set_values_home(values_home)
@@ -226,17 +239,17 @@ podTemplate(
     node(label) {
         stage("Prepare") {
             container("gradle") {
-                prepare(appName, VERSION, VALUES_HOME)
+                prepare(IMAGE_NAME, version, values_home)
             }
         }
-
+/*
         stage("Checkout") {
             container("gradle") {
                 try {
                     if (REPOSITORY_SECRET) {
-                        git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
+                        git(url: REPOSITORY_URL, branch: branch_name, credentialsId: REPOSITORY_SECRET)
                     } else {
-                        git(url: REPOSITORY_URL, branch: BRANCH_NAME)
+                        git(url: REPOSITORY_URL, branch: branch_name)
                     }
                 } catch (exc) {
                     throw(exc)
@@ -271,7 +284,7 @@ podTemplate(
             }
         }
 
-        if (BRANCH_NAME == "master") {
+        if (branch_name == "master") {
             stage("Build docker-image") {
                 parallel(
                     "Build Docker": {
@@ -320,14 +333,14 @@ podTemplate(
                 container("helm") {
                     try {
                         // deploy(sub_domain, profile, values_path)
-                        deploy("${appName}-dev", PROFILE)
+                        deploy("${IMAGE_NAME}-dev", profile)
                     } catch (exc) {
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
                     }
                 }
             }
-
         }
+*/
     }
 }
