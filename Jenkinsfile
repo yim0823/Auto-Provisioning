@@ -228,7 +228,7 @@ def proceed(type = "", namespace = "") {
         echo "proceed:version is null."
         throw new RuntimeException("version is null.")
     }
-    notify_slack("warning", "${type} Proceed?", "`${name}` `${version}` :rocket: `${namespace}`, ${JOB_NAME} <${RUN_DISPLAY_URL}|#${BUILD_NUMBER}>")
+    notify_slack("${type} Proceed?", "`${name}` `${version}` :rocket: `${namespace}`, ${JOB_NAME} <${RUN_DISPLAY_URL}|#${BUILD_NUMBER}>", "warning")
 }
 
 def notify_slack(STATUS, COLOR) {
