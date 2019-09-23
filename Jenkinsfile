@@ -42,33 +42,6 @@ def prepare(name = "sample") {
     this.extra_values = ""
 }
 
-def load_properties() {
-/*
-    props = new Properties()
-    File propertiesFile = new File("./pipeline.properties")
-    props.load(propertiesFile.newDataInputStream())
-    echo "## Immediate one ${props.version}"
-
-    if (!props.exists()) {
-        echo "######## There is no properties file"
-    }
-
-    VERSION = props.version
-    PROFILE = props.profile
-    VALUES_HOME = props.values_home
-*/
-
-    if (!fileExists('pipeline.properties')) {
-        echo '### No pipeline.properties.'
-        exit
-    }
-    def props = readProperties  file:"pipeline.properties"
-
-    VERSION = props['version']
-    PROFILE = props['profile']
-    VALUES_HOME = props['values_home']
-}
-
 def set_version(version = "") {
     if (!version) {
         date = (new Date()).format('yyyyMMdd-HHmm')

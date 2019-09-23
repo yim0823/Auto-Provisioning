@@ -20,6 +20,24 @@
  - Flyway 5.2.4
  - Rest Doc 2.0.3.RELEASE
 
+## properties 분리
+src
+ |_ main
+     |_ resources
+            |_ application.properties 
+     |_ resources-dev
+            |_ application-dev.properties
+     |_ resources-local
+            |_ application-local.properties
+
+## CI/CD 적용
+남은 것
+ - deploy dev 이후 로직 개발 필요
+ - liveness/readiness probe 실패, spring boot actuator 사용 but, connection refuse
+ - properties 적용 - 완료
+ - chartmuseum 적용 필요
+
+# Appendix
  ## 특징
  1. Kubernetes 환경에서 서비스될 것이므로 그에 맞는 `개발, 배포 환경`을 구성한다.
     1. 개발에 사용중인 IDE(Intellij)에서 container image 를 빌드하고 자체 repository 에 push 한다.
