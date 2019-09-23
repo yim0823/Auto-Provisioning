@@ -223,7 +223,7 @@ def notify_slack(STATUS, COLOR) {
     slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})")
 }
 
-notifySlack("STARTED", "#FFFF00")
+notify_slack("STARTED", "#FFFF00")
 
 podTemplate(
     label: label,
@@ -341,10 +341,10 @@ podTemplate(
                         // -- deploy(sub_domain, profile, values_path)
                         deploy("${IMAGE_NAME}-dev", PROFILE)
 
-                        notifySlack("${currentBuild.currentResult}", "#00FF00")
+                        notify_slack("${currentBuild.currentResult}", "#00FF00")
                     } catch (exc) {
                         currentBuild.result = "FAILED"
-                        notifySlack("${currentBuild.currentResult}", "#FF0000")
+                        notify_slack("${currentBuild.currentResult}", "#FF0000")
 
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
