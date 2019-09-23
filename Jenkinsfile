@@ -18,20 +18,25 @@ def prepare(name = "sample", version = "", values_home =".") {
     echo "# name: ${name}"
 
     // -- Read the environment variables file to set variables
+    props = new Properties()
+    File propertiesFile = new File("./pipeline.properties")
+    props.load(propertiesFile.newDataInputStream())
+    echo "## Immediate one ${props.version}"
+
     def props = readProperties  file:"./pipeline.properties"
     if (!props.exists()) {
         echo "######## There is no properties file"
     }
 
-    VERSION = props["deploy.app.version"]
-    PROFILE = props["deploy.app.profile"]
-    BRANCH_NAME = props["deploy.code.branch_name"]
-    VALUES_HOME = props["deploy.chart.values_home"]
+    VERSION = props.version
+    PROFILE = props.profile
+    BRANCH_NAME = props.branch_name
+    VALUES_HOME = props.values_home
 
-    echo "${VERSION}"
-    echo "${PROFILE}"
-    echo "${BRANCH_NAME}"
-    echo "${VALUES_HOME}"
+    echo "# VERSION : ${VERSION}"
+    echo "# PROFILE : ${PROFILE}"
+    echo "# BRANCH_NAME : ${BRANCH_NAME}"
+    echo "# VALUES_HOME : ${VALUES_HOME}"
 
     set_version(version)
     set_values_home(values_home)
