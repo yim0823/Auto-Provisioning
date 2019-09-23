@@ -13,13 +13,12 @@ def label = "worker-${UUID.randomUUID().toString()}"
 
 /* -------- functions ---------- */
 def prepare(name = "sample", version = "", values_home =".") {
-    // image name
     this.name = name
 
     echo "# name: ${name}"
 
     // -- Read the environment variables file to set variables
-    def props = readProperties  file:"pipeline.properties"
+    def props = readProperties  file:"./pipeline.properties"
     def VERSION = props["version"]
     def PROFILE = props["profile"]
     def BRANCH_NAME = props["branch_name"]
@@ -35,7 +34,6 @@ def prepare(name = "sample", version = "", values_home =".") {
 }
 
 def set_version(version = "") {
-    // version
     if (!version) {
         date = (new Date()).format('yyyyMMdd-HHmm')
         version = "v0.0.1-${date}"
@@ -89,7 +87,7 @@ def build_chart(path = "") {
 }
 
 def helm_init() {
-    //setup helm connectivity to Kubernetes API and Tiller
+    // -- setup helm connectivity to Kubernetes API and Tiller
     println "initiliazing helm client"
     sh "helm init --client-only"
 
@@ -102,7 +100,7 @@ def helm_init() {
 def chartmeseum_init() {
     sh "helm repo add chartmuseum https://${chartmuseum}"
 
-    // helm plugin
+    // -- helm plugin
     count = sh(script: "helm plugin list | grep 'Push chart package' | wc -l", returnStdout: true).trim()
     if ("${count}" == "0") {
         sh """
@@ -120,7 +118,7 @@ def env_namespace(namespace = "") {
 
     this.namespace = namespace
 
-    // check namespace
+    // -- check namespace
     count = sh(script: "kubectl get ns ${namespace} 2>&1 | grep Active | grep ${namespace} | wc -l", returnStdout: true).trim()
     if ("$count" == "0") {
         sh "kubectl create namespace ${namespace}"
@@ -130,7 +128,7 @@ def env_namespace(namespace = "") {
 def  get_replicas(namespace = "") {
     env_namespace(namespace)
 
-    // Keep latest pod count
+    // -- Keep latest pod count
     desired = sh(script: "kubectl get deploy -n ${namespace} | grep ${name} | head -1 | awk '{print \$3}'", returnStdout: true).trim()
     if (desired != "") {
         // extra_values (format = --set KEY=VALUE)
@@ -161,7 +159,6 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
     helm_init()
     this.sub_domain = sub_domain
 
-    // latest version
     if (version == "latest") {
         version = sh(script: "helm search chartmuseum/${name} | grep ${name} | head -1 | awk '{print \$2}'", returnStdout: true).trim()
         if (version == "") {
@@ -170,7 +167,6 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
         }
     }
 
-    // values_path
     if (!values_path) {
         values_path = ""
         if (values_home) {
@@ -185,7 +181,7 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
         }
     }
 
-    // helm install
+    // -- helm install
     if (values_path) {
         sh """
             helm upgrade --install ${name}-${namespace} charts/${name} \
@@ -213,7 +209,6 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
         helm history ${name}-${namespace} --max 10
     """
 }
-/* ------------------------------ */
 
 podTemplate(
     label: label,
@@ -238,5 +233,104 @@ podTemplate(
             }
         }
 
+        stage("Checkout") {
+            container("gradle") {
+                try {
+                    if (REPOSITORY_SECRET) {
+                        git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
+                    } else {
+                        git(url: REPOSITORY_URL, branch: BRANCH_NAME)
+                    }
+                } catch (exc) {
+                    throw(exc)
+                }
+            }
+        }
+
+        /* stage("Tests") {
+            try {
+                container("gradle") {
+                    sh """
+                        pwd
+                        echo "GIT_BRANCH=${gitBranch}" >> /etc/environment
+                        echo "GIT_COMMIT=${gitCommit}" >> /etc/environment
+                        gradle test
+                    """
+                }
+            } catch (exc) {
+                println "Failed to test - ${currentBuild.fullDisplayName}"
+                throw(exc)
+            }
+        } */
+
+        stage("Gradle build") {
+            container("gradle") {
+                try {
+                    sh "gradle clean build -x test -Pprofile=dev"
+                } catch (exc) {
+                    println "Failed to gradle - ${currentBuild.fullDisplayName}"
+                    throw(exc)
+                }
+            }
+        }
+
+        if (BRANCH_NAME == "master") {
+            stage("Build docker-image") {
+                parallel(
+                    "Build Docker": {
+                        container('docker') {
+                            withCredentials([[
+                                $class: 'UsernamePasswordMultiBinding',
+                                credentialsId: 'dockerhub',
+                                usernameVariable: 'DOCKER_HUB_USER',
+                                passwordVariable: 'DOCKER_HUB_PASSWORD'
+                            ]]) {
+                                try {
+                                    sh """
+                                        docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+                                        docker build -t ${DOCKER_HUB_USER}/${name}:${version} .
+                                        docker push ${DOCKER_HUB_USER}/${name}:${version}
+                                    """
+                                } catch (exc) {
+                                    println "Failed to build docker - ${currentBuild.fullDisplayName}"
+                                    throw(exc)
+                                }
+                            }
+                        }
+                    },
+                    "Build Charts": {
+                        container("helm") {
+                            try {
+                                build_chart()
+                            } catch (exc) {
+                                println "Failed to build Chart - ${currentBuild.fullDisplayName}"
+                                throw(exc)
+                            }
+                        }
+                    }
+                )
+            }
+
+            stage("Deploy Dev") {
+                container("kubectl") {
+                    try {
+                        get_replicas("${SERVICE_GROUP}-dev")
+                    } catch (exc) {
+                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                        throw(exc)
+                    }
+                }
+                container("helm") {
+                    try {
+                        // -- deploy(sub_domain, profile, values_path)
+                        deploy("${IMAGE_NAME}-dev", PROFILE)
+                    } catch (exc) {
+                        println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
+                        throw(exc)
+                    }
+                }
+            }
+
+        }
     }
 }
