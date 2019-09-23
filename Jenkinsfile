@@ -223,6 +223,8 @@ def notify_slack(STATUS, COLOR) {
     slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})")
 }
 
+notifySlack("STARTED", "#FFFF00")
+
 podTemplate(
     label: label,
     containers: [
