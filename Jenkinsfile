@@ -11,7 +11,7 @@ def REPOSITORY_SECRET = ""
 
 def label = "worker-${UUID.randomUUID().toString()}"
 
-/* -------- Functions ---------- */
+/* -------- functions ---------- */
 def prepare(name = "sample", version = "", values_home =".") {
     // image name
     this.name = name
@@ -20,15 +20,10 @@ def prepare(name = "sample", version = "", values_home =".") {
 
     // -- Read the environment variables file to set variables
     def props = readProperties  file:"pipeline.properties"
-    def version = props["version"]
-    def profile = props["profile"]
-    def branch_name = props["branch_name"]
-    def values_home = props["values_home"]
-
-    echo "${version}"
-    echo "${profile}"
-    echo "${branch_name}"
-    echo "${values_home}"
+    def VERSION = props["version"]
+    def PROFILE = props["profile"]
+    def BRANCH_NAME = props["branch_name"]
+    def VALUES_HOME = props["values_home"]
 
     set_version(version)
     set_values_home(values_home)
@@ -239,7 +234,7 @@ podTemplate(
     node(label) {
         stage("Prepare") {
             container("gradle") {
-                prepare(IMAGE_NAME, version, values_home)
+                prepare(IMAGE_NAME, VERSION, VALUES_HOME)
             }
         }
 
