@@ -219,11 +219,23 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
     """
 }
 
+def proceed(type = "", namespace = "") {
+    if (!name) {
+        echo "proceed:name is null."
+        throw new RuntimeException("name is null.")
+    }
+    if (!version) {
+        echo "proceed:version is null."
+        throw new RuntimeException("version is null.")
+    }
+    notify_slack("warning", "${type} Proceed?", "`${name}` `${version}` :rocket: `${namespace}`, ${JOB_NAME} <${RUN_DISPLAY_URL}|#${BUILD_NUMBER}>")
+}
+
 def notify_slack(STATUS, COLOR) {
     slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})")
 }
 
-notify_slack("STARTED", "#FFFF00")
+notify_slack("STARTED", "good")
 
 podTemplate(
     label: label,
@@ -341,13 +353,22 @@ podTemplate(
                         // -- deploy(sub_domain, profile, values_path)
                         deploy("${IMAGE_NAME}-dev", PROFILE)
 
-                        notify_slack("${currentBuild.currentResult}", "#00FF00")
+                        notify_slack("${currentBuild.currentResult}", "good")
                     } catch (exc) {
                         currentBuild.result = "FAILED"
-                        notify_slack("${currentBuild.currentResult}", "#FF0000")
+                        notify_slack("${currentBuild.currentResult}", "danger")
 
                         println "Failed to deploy on dev - ${currentBuild.fullDisplayName}"
                         throw(exc)
+                    }
+                }
+            }
+
+            stage("Request STAGE") {
+                container("kubectl") {
+                    proceed("Request STAGE", "stage")
+                    timeout(time: 60, unit: "MINUTES") {
+                        input(message: "${name} ${version} to stage")
                     }
                 }
             }
