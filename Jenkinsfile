@@ -18,6 +18,8 @@ def prepare(name = "sample", version = "", values_home =".") {
     echo "# name: ${name}"
 
     // -- Read the environment variables file to set variables
+    load_properties()
+
     echo "# VERSION : ${VERSION}"
     echo "# PROFILE : ${PROFILE}"
     echo "# BRANCH_NAME : ${BRANCH_NAME}"
