@@ -4,10 +4,10 @@ def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
 
-//def VERSION = "0.0.1"
-//def VALUES_HOME = "charts"
-//def PROFILE = "dev"
-//def BRANCH_NAME = "master"
+def VERSION
+def VALUES_HOME
+def PROFILE
+def BRANCH_NAME
 
 def label = "worker-${UUID.randomUUID().toString()}"
 
@@ -18,15 +18,15 @@ def prepare(name = "sample", version = "", values_home =".") {
     echo "# name: ${name}"
 
     // -- Read the environment variables file to set variables
-    def props = readProperties  file:"pipeline.properties"
+    def props = readProperties  file:"./pipeline.properties"
     if (!props.exists()) {
         echo "######## There is no properties file"
     }
 
-    def VERSION = props["deploy.app.version"]
-    def PROFILE = props["deploy.app.profile"]
-    def BRANCH_NAME = props["deploy.code.branch_name"]
-    def VALUES_HOME = props["deploy.chart.values_home"]
+    VERSION = props["deploy.app.version"]
+    PROFILE = props["deploy.app.profile"]
+    BRANCH_NAME = props["deploy.code.branch_name"]
+    VALUES_HOME = props["deploy.chart.values_home"]
 
     echo "${VERSION}"
     echo "${PROFILE}"
