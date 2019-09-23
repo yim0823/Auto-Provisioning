@@ -12,20 +12,29 @@ def PROFILE
 def label = "worker-${UUID.randomUUID().toString()}"
 
 /* -------- functions ---------- */
-def prepare(name = "sample", version = "", values_home =".") {
+def prepare(name = "sample") {
     this.name = name
 
     echo "# name: ${name}"
 
     // -- Read the environment variables file to set variables
-    load_properties()
+    if (!fileExists('pipeline.properties')) {
+        echo '### No pipeline.properties.'
+        exit
+    }
+
+    def props = readProperties  file:"pipeline.properties"
+
+    VERSION = props['version']
+    PROFILE = props['profile']
+    VALUES_HOME = props['values_home']
 
     echo "# VERSION : ${VERSION}"
     echo "# PROFILE : ${PROFILE}"
     echo "# VALUES_HOME : ${VALUES_HOME}"
 
-    set_version(version)
-    set_values_home(values_home)
+    set_version(VERSION)
+    set_values_home(VALUES_HOME)
 
     this.namespace = ""
     this.sub_domain = ""
@@ -48,8 +57,6 @@ def load_properties() {
     PROFILE = props.profile
     VALUES_HOME = props.values_home
 */
-
-    sh(script: pwd)
 
     if (!fileExists('pipeline.properties')) {
         echo '### No pipeline.properties.'
@@ -273,7 +280,7 @@ podTemplate(
 
         stage("Prepare") {
             container("gradle") {
-                prepare(IMAGE_NAME, VERSION, VALUES_HOME)
+                prepare(IMAGE_NAME)
             }
         }
 
