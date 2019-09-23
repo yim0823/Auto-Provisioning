@@ -3,11 +3,11 @@ def SERVICE_NAME = "auto-provisioning"
 def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
 def REPOSITORY_URL = "https://github.com/yim0823/Auto-Provisioning.git"
 def REPOSITORY_SECRET = ""
+def BRANCH_NAME = "master"
 
 def VERSION
 def VALUES_HOME
 def PROFILE
-def BRANCH_NAME
 
 def label = "worker-${UUID.randomUUID().toString()}"
 
@@ -22,7 +22,6 @@ def prepare(name = "sample", version = "", values_home =".") {
 
     echo "# VERSION : ${VERSION}"
     echo "# PROFILE : ${PROFILE}"
-    echo "# BRANCH_NAME : ${BRANCH_NAME}"
     echo "# VALUES_HOME : ${VALUES_HOME}"
 
     set_version(version)
@@ -47,7 +46,6 @@ def load_properties() {
 
     VERSION = props.version
     PROFILE = props.profile
-    BRANCH_NAME = props.branch_name
     VALUES_HOME = props.values_home
 */
 
@@ -61,7 +59,6 @@ def load_properties() {
 
     VERSION = props['version']
     PROFILE = props['profile']
-    BRANCH_NAME = props['branch_name']
     VALUES_HOME = props['values_home']
 }
 
@@ -259,11 +256,6 @@ podTemplate(
 )
 {
     node(label) {
-        stage("Prepare") {
-            container("gradle") {
-                prepare(IMAGE_NAME, VERSION, VALUES_HOME)
-            }
-        }
 
         stage("Checkout") {
             container("gradle") {
@@ -276,6 +268,12 @@ podTemplate(
                 } catch (exc) {
                     throw(exc)
                 }
+            }
+        }
+
+        stage("Prepare") {
+            container("gradle") {
+                prepare(IMAGE_NAME, VERSION, VALUES_HOME)
             }
         }
 
