@@ -220,7 +220,7 @@ def deploy(sub_domain = "", profile = "", values_path = "") {
 }
 
 def notify_slack(STATUS, COLOR) {
-    slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})"
+    slackSend(color: COLOR, message: STATUS + " : " + "${env.JOB_NAME} [${env.BUILD_NUMBER}] (${env.BUILD_URL})")
 }
 
 podTemplate(
